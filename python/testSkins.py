@@ -1,6 +1,7 @@
 from datasets import load_dataset
 from huggingface_hub import hf_hub_download
 from PIL import Image
+from pathlib import Path
 
 dataset = load_dataset("While402/CounterStrike2Skins", split="metadata")
 
@@ -19,4 +20,6 @@ image = Image.open(image_path)
 
 #kle sm pa sam v repo savu da sm vidu kako zgleda slika hihi
 output_filename = f"skin_{first_sample['imageid']}.png"
-image.save(output_filename, "PNG")
+output_path = Path(__file__).resolve().parent / output_filename
+image.save(output_path, "PNG")
+print(f"Saved image to: {output_path}")
