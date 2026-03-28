@@ -44,3 +44,16 @@ python testSkins.py
 - If your prompt starts with (.venv), you are using the virtual environment.
 - The script saves the first skin image as skin_1.png (or matching image id).
 - The .venv folder is ignored by git on purpose and should not be committed.
+
+
+
+
+
+# OPIS
+.gitignore
+testSkins.py
+requirements.txt
+
+SE NE SPREMINJAJO,
+testSkins.py je samo testni script <3
+kasnejšo logiko se pipše v nek nov skript, taj tuki kot demo dostopa
