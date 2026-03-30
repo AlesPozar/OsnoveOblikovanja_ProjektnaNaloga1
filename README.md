@@ -1,3 +1,24 @@
+# POMEMBNO, GLEJ TODO.md ZA KAJ JE SE TREBA NRDIT <3
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
 # Counter-Strike Skin Dataset Test
 
 ## Project structure
