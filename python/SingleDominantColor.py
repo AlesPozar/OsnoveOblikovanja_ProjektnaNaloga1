@@ -1,3 +1,4 @@
+from colorsys import rgb_to_hsv
 from datasets import load_dataset
 from huggingface_hub import hf_hub_download
 from huggingface_hub.errors import RemoteEntryNotFoundError
@@ -9,9 +10,11 @@ init(autoreset=True)
 
 dataset = load_dataset("While402/CounterStrike2Skins", split="metadata")
 
+outputFile = open("single_dominant_color_whole.txt", "w", encoding="utf-8")
+
 #Single Dominant Color Extractor, per whole gun, including the handle and other maybe not paintd parts, but excluding pure ish black/white
 for item in dataset:
-    if(item["exterior"] == "Factory New"):
+    if(item["exterior"] == "Factory New" and "StatTrak" not in item["name"]):
         print("Weapon found\n")
 
         try:
@@ -50,6 +53,13 @@ for item in dataset:
                 "\033[0m"
             )
             print(Fore.BLUE + f"Dominant color for {item['name']} is: {dominantColor} {color_preview}\n")
+
+            #rgb -> hsv, and output
+            r, g, b = dominantColor
+            h, s, v = rgb_to_hsv(r, g, b)
+            outputFile.write(f"{item['name']}|{item['rarity']}|{item['weapon']}|{h:.2f}|{s:.2f}|{v:.2f}\n")#format: name|rarity|weapon|hue|saturation|value, all are factory new!
+
         except RemoteEntryNotFoundError:
             print(f"Skipped: Image not found for {item['name']}")
             continue
+outputFile.close()
