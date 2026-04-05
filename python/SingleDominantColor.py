@@ -10,7 +10,7 @@ init(autoreset=True)
 
 dataset = load_dataset("While402/CounterStrike2Skins", split="metadata")
 
-outputFile = open("single_dominant_color_whole.txt", "w", encoding="utf-8")
+outputFile = open("single_dominant_color_whole222222.txt", "w", encoding="utf-8")
 
 #Single Dominant Color Extractor, per whole gun, including the handle and other maybe not paintd parts, but excluding pure ish black/white
 for item in dataset:
