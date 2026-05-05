@@ -10,7 +10,7 @@ init(autoreset=True)
 
 dataset = load_dataset("While402/CounterStrike2Skins", split="metadata")
 
-outputFile = open("weighted_average_colors.txt", "w", encoding="utf-8")
+outputFile = open("weighted_average_colors_whole.txt", "w", encoding="utf-8")
 
 #Example 3*red and 1*blue -> (3*red + 1*blue) / 4, so the color is weighted by the frequency of the color in the image
 #Average Weighted Color Extractor, per whole gun, including the handle and other maybe not paintd parts, but excluding pure ish black/white and statTrack items(stat track versions of normal skins)
@@ -67,7 +67,7 @@ for item in dataset:
             #rgb -> hsv, and output
             r, g, b = avg_r, avg_g, avg_b
             h, s, v = rgb_to_hsv(r, g, b)
-            outputFile.write(f"{item['name']}|{item['rarity']}|{item['weapon']}|{h:.2f}|{s:.2f}|{v:.2f}\n")#format: name|rarity|weapon|hue|saturation|value, all are factory new!
+            outputFile.write(f"{item['name']}|{item['rarity']}|{item['imageid']}|{item['weapon']}|{h:.2f}|{s:.2f}|{v:.2f}\n")#format: name|rarity|imageid|weapon|hue|saturation|value, all are factory new!
 
         except RemoteEntryNotFoundError:
             print(f"Skipped: Image not found for {item['name']}")
