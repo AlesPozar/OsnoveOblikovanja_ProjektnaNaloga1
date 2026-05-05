@@ -37,6 +37,7 @@ for item in dataset:
             avg_r = 0
             avg_g = 0
             avg_b = 0
+            num_of_pixels = 0
             #logic
             for j in range(x):
                 for k in range(y):
@@ -46,13 +47,14 @@ for item in dataset:
                         avg_r += r
                         avg_g += g
                         avg_b += b
+                        num_of_pixels += 1
+
 
             #calculate the average color
-            total_pixels = x * y
-            if total_pixels > 0:
-                avg_r //= total_pixels
-                avg_g //= total_pixels
-                avg_b //= total_pixels
+            if num_of_pixels > 0:
+                avg_r //= num_of_pixels
+                avg_g //= num_of_pixels
+                avg_b //= num_of_pixels
 
             color_preview = (
                 "\033[48;2;255;255;255m "
