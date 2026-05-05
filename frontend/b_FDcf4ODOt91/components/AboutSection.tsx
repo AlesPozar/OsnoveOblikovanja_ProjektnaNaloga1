@@ -48,10 +48,12 @@ export default function AboutSection({ currentSection, totalSections, onNavClick
       </div>
 
       {/* CS2 sticker — bottom right */}
-      <div className="absolute bottom-4 right-16 opacity-50 hover:opacity-80 transition-opacity">
-        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 via-rose-500 to-purple-600 flex items-center justify-center">
-          <span className="text-white text-[8px] font-bold tracking-tight leading-none">CS2</span>
-        </div>
+      <div className="absolute bottom-4 right-16">
+        <img
+          src="CS2Stickers/256fx256f.png"
+          alt="CS2"
+          className="w-20 h-20 rounded-full"
+        />
       </div>
 
       {/* Nav dots — right side */}

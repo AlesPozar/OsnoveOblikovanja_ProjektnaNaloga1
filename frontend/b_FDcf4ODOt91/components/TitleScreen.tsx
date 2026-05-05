@@ -44,12 +44,12 @@ export default function TitleScreen({ onContinue }: Props) {
       </button>
 
       {/* CS2 sticker — bottom right corner */}
-      <div className="absolute bottom-4 right-5 opacity-50 hover:opacity-80 transition-opacity">
-        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 via-rose-500 to-purple-600 flex items-center justify-center">
-          <span className="text-white text-[8px] font-bold tracking-tight leading-none">
-            CS2
-          </span>
-        </div>
+      <div className="absolute bottom-4 right-5 w-20 h-20">
+        <img
+          src="CS2Stickers/f36ea9a5aef81d4440bff827d2d2d206.png"
+          alt="CS2"
+          className="w-full h-full"
+        />
       </div>
     </div>
   );

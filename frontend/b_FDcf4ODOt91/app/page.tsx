@@ -90,6 +90,7 @@ export default function Home() {
           analysisMode={analysisMode}
           onAnalysisModeChange={setAnalysisMode}
           sectionIndex={SECTION_DOMINANT}
+          stickerName="260fx260f"
           {...navProps}
         />
       </div>
@@ -107,6 +108,7 @@ export default function Home() {
           analysisMode={analysisMode}
           onAnalysisModeChange={setAnalysisMode}
           sectionIndex={SECTION_AVERAGE}
+          stickerName="58713ac580bb6a8fdd1db25137a097c078e07c0a3698f4c77b604fae836546e1"
           {...navProps}
         />
       </div>
@@ -124,6 +126,7 @@ export default function Home() {
           analysisMode={analysisMode}
           onAnalysisModeChange={setAnalysisMode}
           sectionIndex={SECTION_WEIGHTED}
+          stickerName="360fx360f"
           {...navProps}
         />
       </div>

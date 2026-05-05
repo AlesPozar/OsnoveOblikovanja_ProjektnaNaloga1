@@ -78,7 +78,17 @@ export default function LikedSection({
                   className="w-full h-14 rounded flex items-center justify-center mb-2 overflow-hidden"
                   style={{ background: `${color}18` }}
                 >
-                  <GunSmall color={color} />
+                  <img
+                    src={`/CS2Skins/${skin.imageId}.png`}
+                    alt={`${skin.weapon} | ${skin.skinName}`}
+                    className="absolute inset-0 w-full h-full object-contain"
+                    draggable={false}
+                    loading="lazy"
+                    onError={(e) => {
+                      e.currentTarget.style.display = "none";
+                    }}
+                  />
+                  {/*<GunSmall color={color} />*/}
                 </div>
 
                 <p className="text-[10px] font-light text-gray-500 text-center leading-tight truncate w-full">
@@ -105,10 +115,12 @@ export default function LikedSection({
       </div>
 
       {/* CS2 sticker */}
-      <div className="absolute bottom-4 right-16 opacity-50 hover:opacity-80 transition-opacity">
-        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 via-rose-500 to-purple-600 flex items-center justify-center">
-          <span className="text-white text-[8px] font-bold leading-none">CS2</span>
-        </div>
+      <div className="absolute bottom-4 right-16 w-20 h-20">
+        <img
+          src="CS2Stickers/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJai0ki7VeTHjNqoO26H9ml29Zfn_1XiDgnwk5fy_B1T4P6hJqJvePPDXj_Jkr51seI4Sn_qwR9-tjiHyN2ocX3E.png"
+          alt="CS2"
+          className="w-full"
+        />
       </div>
 
       {/* Nav dots */}

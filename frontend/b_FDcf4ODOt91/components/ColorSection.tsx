@@ -20,6 +20,7 @@ interface Props {
   totalSections: number;
   onNavClick: (i: number) => void;
   sectionIndex: number;
+  stickerName: string;
 }
 
 // AK-47 silhouette SVG path
@@ -50,12 +51,14 @@ export default function ColorSection({
   totalSections,
   onNavClick,
   sectionIndex,
+  stickerName,
 }: Props) {
   const [selectedSkin, setSelectedSkin] = useState<Skin | null>(null);
   const [highlightId, setHighlightId] = useState<string | null>(null);
   const [filterWeapon, setFilterWeapon] = useState<string | null>(null);
   const [view, setView] = useState<"cone" | "circle">("cone");
-  const [panelVisible, setPanelVisible] = useState(true);
+  const [panelVisible, setPanelVisible] = useState(false);
+  const [hasPickedFirstSkin, setHasPickedFirstSkin] = useState(false);
   const [weaponOpen, setWeaponOpen] = useState(false);
   const [nameOpen, setNameOpen] = useState(false);
   const [ingameMode, setIngameMode] = useState(false);
@@ -70,9 +73,10 @@ export default function ColorSection({
   const handleSkinSelect = useCallback(
     (skin: Skin) => {
       setSelectedSkin(skin);
+      if (!hasPickedFirstSkin) setHasPickedFirstSkin(true);
       if (!panelVisible) setPanelVisible(true);
     },
-    [panelVisible]
+    [hasPickedFirstSkin, panelVisible]
   );
 
   const closeDropdowns = useCallback(() => {
@@ -227,7 +231,13 @@ export default function ColorSection({
                       }`}
                       onClick={(e) => {
                         e.stopPropagation();
-                        setHighlightId(s?.id ?? null);
+                        const nextId = s?.id ?? null;
+                        setHighlightId(nextId);
+                        if (!hasPickedFirstSkin) setHasPickedFirstSkin(true);
+                        if (s) {
+                          setSelectedSkin(s);
+                          if (!panelVisible) setPanelVisible(true);
+                        }
                         setNameOpen(false);
                       }}
                     >
@@ -247,11 +257,9 @@ export default function ColorSection({
           >
             <Star
               size={26}
-              className={
-                likedIds.size > 0
-                  ? "fill-yellow-400 text-yellow-400"
-                  : "fill-yellow-200 text-yellow-300"
-              }
+              strokeWidth={1.6}
+              fill="none"
+              className={likedIds.size > 0 ? "text-yellow-400" : "text-yellow-300"}
             />
           </button>
         </div>
@@ -259,22 +267,24 @@ export default function ColorSection({
 
       {/* ── MAIN CONTENT ── */}
       <div className="flex flex-1 min-h-0 relative">
-        {/* Left side: eye toggle (fixed, vertically centered) */}
-        <button
-          onClick={() => setPanelVisible(!panelVisible)}
-          className="absolute left-4 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-700 transition-colors z-30"
-          aria-label={panelVisible ? "Hide panel" : "Show panel"}
-        >
-          {panelVisible ? (
-            <EyeOff size={22} strokeWidth={1.4} />
-          ) : (
-            <Eye size={22} strokeWidth={1.4} />
-          )}
-        </button>
+        {/* Left side: eye toggle (only after first selection) */}
+        {hasPickedFirstSkin && (
+          <button
+            onClick={() => setPanelVisible(!panelVisible)}
+            className="absolute left-4 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-700 transition-colors z-30"
+            aria-label={panelVisible ? "Hide panel" : "Show panel"}
+          >
+            {panelVisible ? (
+              <EyeOff size={22} strokeWidth={1.4} />
+            ) : (
+              <Eye size={22} strokeWidth={1.4} />
+            )}
+          </button>
+        )}
 
         {/* Left column: skin panel (hidden when panelVisible is false) */}
         {panelVisible && (
-          <div className="flex flex-col items-start pl-20 pt-2 flex-shrink-0 w-[300px] overflow-y-auto">
+          <div className="w-1/2 min-w-0 overflow-y-auto px-10 pt-4 m-40 center">
             <SkinPanel
               skin={selectedSkin}
               allSkins={skins}
@@ -286,7 +296,9 @@ export default function ColorSection({
         )}
 
         {/* Center: visualization (expands when panel is hidden) */}
-        <div className={`${panelVisible ? "flex-1" : "flex-1"} flex flex-col items-center justify-center relative`}>
+        <div
+          className={`${panelVisible ? "w-1/2" : "flex-1"} min-w-0 flex flex-col items-center justify-center relative`}
+        >
           {ingameMode ? (
             <div className="flex flex-col items-center justify-center h-full gap-3">
               <p className="text-xl font-light italic text-gray-400 tracking-wide">
@@ -360,8 +372,7 @@ export default function ColorSection({
           )}
         </div>
 
-        {/* Right: spacer for nav dots */}
-        <div className="w-14 flex-shrink-0" />
+        {/* Right: nav is absolutely positioned; no spacer */}
       </div>
 
       {/* ── BOTTOM LEFT: authors ── */}
@@ -371,11 +382,11 @@ export default function ColorSection({
 
       {/* ── BOTTOM RIGHT: CS2 sticker ── */}
       <div className="absolute bottom-4 right-16">
-        <div className="w-11 h-11 rounded-full overflow-hidden opacity-70 hover:opacity-100 transition-opacity">
+        <div className="w-20 h-20">
           <img
-            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-bUgLDwK3oHxbpuWIRyIG06SnbOFWEv.png"
+            src={`CS2Stickers/${stickerName}.png`}
             alt="CS2"
-            className="w-full h-full object-cover"
+            className="w-full object-cover"
             style={{ objectPosition: "right bottom" }}
           />
         </div>
