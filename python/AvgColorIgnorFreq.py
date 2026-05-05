@@ -10,9 +10,10 @@ init(autoreset=True)
 
 dataset = load_dataset("While402/CounterStrike2Skins", split="metadata")
 
-outputFile = open("single_dominant_color_whole222222.txt", "w", encoding="utf-8")
+outputFile = open("average_colors.txt", "w", encoding="utf-8")
 
-#Single Dominant Color Extractor, per whole gun, including the handle and other maybe not paintd parts, but excluding pure ish black/white and statTrack items(stat track versions of normal skins)
+#Example 3*red and 1*blue -> (1*red + 1*blue) / 2, so the color is weighted by ignoring the frequency of the color in the image
+#Average Color Extractor, per whole gun, including the handle and other maybe not paintd parts, but excluding pure ish black/white and statTrack items(stat track versions of normal skins)
 for item in dataset:
     if(item["exterior"] == "Factory New" and "StatTrak" not in item["name"]):
         print("Weapon found\n")
@@ -30,32 +31,44 @@ for item in dataset:
 
             #ez algorithm to find the dominant colot in one swipe trough the image <3
             rgb_values = [[[0 for _ in range(256)] for _ in range(256)] for _ in range(256)]
-            maxCurCount = 0
             dominantColor = (0, 0, 0)
             excluded = {
                 (0, 0, 0), (1, 1, 1), (2, 2, 2),
                 (253, 253, 253), (254, 254, 254), (255, 255, 255),
             }
+
+            avg_r = 0
+            avg_g = 0
+            avg_b = 0
+            num_of_dif_colors = 0
+
             for j in range(x):
                 for k in range(y):
                     r, g, b, a = image.getpixel((j, k))
                     #skip transparent pixels, pure ish black pixels and pure ish white pixels
-                    if a > 0 and (r, g, b) not in excluded:
+                    if a > 0 and (r, g, b) not in excluded and rgb_values[r][g][b] == 0:
                         rgb_values[r][g][b] += 1
-                        if rgb_values[r][g][b] > maxCurCount:
-                            maxCurCount = rgb_values[r][g][b]
-                            dominantColor = (r, g, b)
+                        avg_r += r
+                        avg_g += g
+                        avg_b += b
+                        num_of_dif_colors += 1
 
+            #calc the avg
+            if num_of_dif_colors > 0:
+                avg_r //= num_of_dif_colors
+                avg_g //= num_of_dif_colors
+                avg_b //= num_of_dif_colors
+            
             color_preview = (
                 "\033[48;2;255;255;255m "
-                f"\033[48;2;{dominantColor[0]};{dominantColor[1]};{dominantColor[2]}m        "
+                f"\033[48;2;{avg_r};{avg_g};{avg_b}m        "
                 "\033[48;2;255;255;255m "
                 "\033[0m"
             )
-            print(Fore.BLUE + f"Dominant color for {item['name']} is: {dominantColor} {color_preview}\n")
+            print(Fore.BLUE + f"Average color for {item['name']} is: ({avg_r}, {avg_g}, {avg_b}) {color_preview}\n")
 
             #rgb -> hsv, and output
-            r, g, b = dominantColor
+            r, g, b = avg_r, avg_g, avg_b
             h, s, v = rgb_to_hsv(r, g, b)
             outputFile.write(f"{item['name']}|{item['rarity']}|{item['weapon']}|{h:.2f}|{s:.2f}|{v:.2f}\n")#format: name|rarity|weapon|hue|saturation|value, all are factory new!
 
