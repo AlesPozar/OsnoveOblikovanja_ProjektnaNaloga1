@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import { Star } from "lucide-react";
 import { Skin, skinToColor, RARITY_COLORS } from "@/lib/skinData";
 import { GunSmall } from "./GunPlaceholder";
@@ -20,6 +21,7 @@ export default function LikedSection({
   totalSections,
   onNavClick,
 }: Props) {
+  const [expandedId, setExpandedId] = useState<string | null>(null);
   const likedMap = new Map<string, Skin>();
   for (const dataset of allSkins) {
     for (const skin of dataset) {
@@ -57,61 +59,74 @@ export default function LikedSection({
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 max-w-5xl mx-auto">
-          {liked.map((skin) => {
-            const color = skinToColor(skin);
-            const rarityColor = RARITY_COLORS[skin.rarity] || "#aaa";
-            return (
-              <div
-                key={skin.id}
-                className="group relative flex flex-col items-center rounded border border-gray-100 hover:border-gray-300 p-3 transition-all bg-white hover:shadow-sm"
-              >
-                <button
-                  onClick={() => onUnlike(skin.id)}
-                  className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                  aria-label="Unlike"
-                >
-                  <Star size={12} className="fill-yellow-400 text-yellow-400" />
-                </button>
+        <div className="max-w-5xl mx-auto">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 auto-rows-max">
+            {liked.map((skin) => {
+              const color = skinToColor(skin);
+              const rarityColor = RARITY_COLORS[skin.rarity] || "#aaa";
+              const isExpanded = expandedId === skin.id;
 
+              return (
                 <div
-                  className="w-full h-14 rounded flex items-center justify-center mb-2 overflow-hidden"
-                  style={{ background: `${color}18` }}
+                  key={skin.id}
+                  className={`group relative rounded border border-gray-100 hover:border-gray-300 p-3 transition-all bg-white hover:shadow-sm flex flex-col ${
+                    isExpanded ? "col-span-2 row-span-2" : ""
+                  }`}
+                  onClick={() => setExpandedId(isExpanded ? null : skin.id)}
                 >
-                  <img
-                    src={`/CS2Skins/${skin.imageId}.png`}
-                    alt={`${skin.weapon} | ${skin.skinName}`}
-                    className="absolute inset-0 w-full h-full object-contain"
-                    draggable={false}
-                    loading="lazy"
-                    onError={(e) => {
-                      e.currentTarget.style.display = "none";
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onUnlike(skin.id);
                     }}
-                  />
-                  {/*<GunSmall color={color} />*/}
-                </div>
+                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity z-40"
+                    aria-label="Unlike"
+                  >
+                    <Star size={12} className="fill-yellow-400 text-yellow-400" />
+                  </button>
 
-                <p className="text-[10px] font-light text-gray-500 text-center leading-tight truncate w-full">
-                  {skin.weapon}
-                </p>
-                <p className="text-[11px] font-light text-gray-700 text-center leading-tight truncate w-full">
-                  {skin.skinName}
-                </p>
-                <span
-                  className="text-[8px] mt-1.5 px-1.5 py-0.5 rounded-full text-white"
-                  style={{ background: rarityColor }}
-                >
-                  {skin.rarity}
-                </span>
-              </div>
-            );
-          })}
+                  <div
+                    className="w-full h-14 rounded flex items-center justify-center mb-2 overflow-hidden"
+                    style={{ background: `${color}18` }}
+                  >
+                    <img
+                      src={`/CS2Skins/${skin.imageId}.png`}
+                      alt={`${skin.weapon} | ${skin.skinName}`}
+                      className="absolute inset-0 w-full h-full object-contain"
+                      draggable={false}
+                      loading="lazy"
+                      onError={(e) => {
+                        e.currentTarget.style.display = "none";
+                      }}
+                    />
+                  </div>
+
+                  <div className={`${
+                    isExpanded ? "opacity-100 absolute bottom-2 left-2 right-2" : "opacity-0"
+                  }`}>
+                    <p className="text-xs font-light text-gray-500 leading-tight truncate w-full">
+                      {skin.weapon}
+                    </p>
+                    <p className="text-xl font-light text-gray-700 leading-tight truncate w-full">
+                      {skin.skinName}
+                    </p>
+                    <span
+                      className="text-xs mt-1.5 px-1.5 py-0.5 rounded-full text-white"
+                      style={{ background: rarityColor }}
+                    >
+                      {skin.rarity}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
 
       {/* Authors */}
       <div className="absolute bottom-5 left-6 text-[11px] font-light text-gray-400 tracking-widest">
-        by Domen and Ale&#353;
+        by Ale&#353; and Domen
       </div>
 
       {/* CS2 sticker */}
@@ -125,7 +140,7 @@ export default function LikedSection({
 
       {/* Nav dots */}
       <nav
-        className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col gap-4 z-40"
+        className="fixed right-4 top-1/2 -translate-y-1/2 flex flex-col gap-4 z-40"
         aria-label="Section navigation"
       >
         {Array.from({ length: totalSections }).map((_, i) => (
@@ -133,12 +148,13 @@ export default function LikedSection({
             key={i}
             onClick={() => onNavClick(i)}
             aria-label={`Section ${i + 1}`}
+            className="flex items-center justify-center"
           >
             <span
               className={`block rounded-full border transition-all duration-200 ${
                 currentSection === i
                   ? "w-4 h-4 border-gray-500"
-                  : "w-2.5 h-2.5 border-gray-300 hover:border-gray-500"
+                  : "hover:w-4 hover:h-4 w-2.5 h-2.5 border-gray-300 hover:border-gray-500"
               }`}
             />
           </button>

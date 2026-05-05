@@ -44,7 +44,7 @@ export default function AboutSection({ currentSection, totalSections, onNavClick
 
       {/* Authors — bottom left */}
       <div className="absolute bottom-5 left-6 text-[11px] font-light text-gray-400 tracking-widest">
-        by Domen and Ale&#353;
+        by Ale&#353; and Domen
       </div>
 
       {/* CS2 sticker — bottom right */}
@@ -56,7 +56,7 @@ export default function AboutSection({ currentSection, totalSections, onNavClick
         />
       </div>
 
-      {/* Nav dots — right side */}
+      {/* Nav dots — right side 
       <nav
         className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col gap-4 z-40"
         aria-label="Section navigation"
@@ -77,7 +77,7 @@ export default function AboutSection({ currentSection, totalSections, onNavClick
             />
           </button>
         ))}
-      </nav>
+      </nav> */}
     </div>
   );
 }

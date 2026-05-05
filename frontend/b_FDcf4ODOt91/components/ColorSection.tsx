@@ -101,17 +101,17 @@ export default function ColorSection({
       onClick={closeDropdowns}
     >
       {/* ── TOP BAR ── */}
-      <header className="relative flex items-center justify-between px-6 py-4 flex-shrink-0">
+      <header className="relative flex items-center justify-between px-6 py-4 flex-shrink-0 mr-13">
         {/* Left: rainbow title */}
         <h2
-          className={`text-3xl sm:text-4xl font-light italic tracking-wide leading-none ${titleClass}`}
+          className={`text-3xl min-w-[30rem] sm:text-4xl font-light italic tracking-wide leading-none ${titleClass}`}
           style={{ fontFamily: "inherit" }}
         >
           {title}
         </h2>
 
         {/* Center: subtitle (absolutely centered) */}
-        <span className="absolute left-0 right-0 text-center text-sm font-light tracking-wider text-gray-400 pointer-events-none">
+        <span className="absolute left-6 right-0 top-20 text-sm font-light tracking-wider text-gray-400 pointer-events-none">
           {subtitle}
         </span>
 
@@ -129,7 +129,17 @@ export default function ColorSection({
             title={ingameMode ? "Showing in-game parts (click for whole)" : "Showing whole skin (click for in-game parts)"}
             aria-label="Toggle analysis region"
           >
-            <AK47Icon className="w-14 h-6" />
+            {
+              ingameMode ? 
+              (<img
+              className="w-35 h-19 mt-1"
+              src="AKIkona/Screenshot 2026-05-05 232657.png"
+              alt="In-game mode"  />) 
+              : (<img
+              className="w-35 h-20"
+              src="AKIkona/Screenshot 2026-05-05 232438.png"
+              alt="In-game mode"  />)
+            }
           </button>
 
           {/* by weapon dropdown */}
@@ -139,7 +149,7 @@ export default function ColorSection({
                 by weapon:
               </span>
               <button
-                className="flex items-center gap-1 text-sm font-light text-gray-700 hover:text-gray-900 transition-colors"
+                className="flex items-center gap-1 text-xl font-light text-gray-700 hover:text-gray-900 transition-colors"
                 onClick={(e) => {
                   e.stopPropagation();
                   setWeaponOpen(!weaponOpen);
@@ -190,14 +200,14 @@ export default function ColorSection({
                 highlight skin by name:
               </span>
               <button
-                className="flex items-center gap-1 text-sm font-light text-gray-700 hover:text-gray-900 transition-colors"
+                className="flex items-center gap-1 text-xl font-light text-gray-700 hover:text-gray-900 transition-colors"
                 onClick={(e) => {
                   e.stopPropagation();
                   setNameOpen(!nameOpen);
                   setWeaponOpen(false);
                 }}
               >
-                <span className="max-w-[9rem] truncate">{highlightedSkinName}</span>
+                <span className="max-w-[15rem] truncate">{highlightedSkinName}</span>
                 <ChevronDown size={11} className="text-gray-400" />
               </button>
             </div>
@@ -377,7 +387,7 @@ export default function ColorSection({
 
       {/* ── BOTTOM LEFT: authors ── */}
       <div className="absolute bottom-5 left-6 text-[11px] font-light text-gray-400 tracking-widest">
-        by Domen and Ale&#353;
+        by Ale&#353; and Domen
       </div>
 
       {/* ── BOTTOM RIGHT: CS2 sticker ── */}
@@ -392,9 +402,9 @@ export default function ColorSection({
         </div>
       </div>
 
-      {/* ── RIGHT SIDE: nav dots (fixed to this section's right edge) ── */}
+      {/* ── RIGHT SIDE: nav dots (fixed to this section's right edge) ──
       <nav
-        className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col gap-4 z-40"
+        className="fixed right-4 top-1/2 -translate-y-1/2 flex flex-col gap-4 z-40"
         aria-label="Section navigation"
       >
         {Array.from({ length: totalSections }).map((_, i) => (
@@ -408,12 +418,12 @@ export default function ColorSection({
               className={`block rounded-full border transition-all duration-200 ${
                 currentSection === i
                   ? "w-4 h-4 border-gray-500"
-                  : "w-2.5 h-2.5 border-gray-300 hover:border-gray-500"
+                  : "hover:w-4 hover:h-4 w-2.5 h-2.5 border-gray-300 hover:border-gray-500"
               }`}
             />
           </button>
         ))}
-      </nav>
+      </nav> */}
     </div>
   );
 }

@@ -424,8 +424,6 @@ export default function HSVCone({
     });
   }, [view, sortedSkins, selectedId, highlightId, onSelect]);
 
-  const circleGuideR = 220;
-
   // Keep the canvas in sync with latest data.
   useEffect(() => {
     if (view !== "cone") return;
@@ -452,25 +450,6 @@ export default function HSVCone({
           onPointerUp={endDrag}
           onPointerCancel={endDrag}
         >
-          <g opacity={0.95}>
-            <circle
-              cx={CX}
-              cy={CY}
-              r={circleGuideR}
-              fill="rgba(255,255,255,0.92)"
-              stroke="rgba(107,114,128,0.28)"
-              strokeWidth={1.25}
-            />
-            <circle
-              cx={CX}
-              cy={CY}
-              r={circleGuideR - 58}
-              fill="none"
-              stroke="rgba(156,163,175,0.14)"
-              strokeWidth={1}
-              strokeDasharray="3 7"
-            />
-          </g>
           <g transform={`rotate(${rotation} ${CX} ${CY})`}>{circleDots}</g>
         </svg>
       ) : (
@@ -486,16 +465,25 @@ export default function HSVCone({
       )}
 
       {/* Tooltip */}
-      {tooltip && (
-        <div
-          className="pointer-events-none absolute z-30 bg-white border border-gray-200 rounded px-2.5 py-1.5 text-xs shadow-lg whitespace-nowrap"
-          style={{ left: tooltip.x + 12, top: tooltip.y - 36 }}
-        >
-          <span className="font-medium text-gray-800">{tooltip.skin.weapon}</span>
-          <span className="text-gray-400 mx-1">|</span>
-          <span className="text-gray-600">{tooltip.skin.skinName}</span>
-        </div>
-      )}
+      {tooltip && (() => {
+        const canvasRect = view === "circle" ? svgRef.current?.getBoundingClientRect() : coneCanvasRef.current?.getBoundingClientRect();
+        const tooltipX = (canvasRect?.left || 0) + tooltip.x;
+        const tooltipY = (canvasRect?.top || 0) + tooltip.y;
+        return (
+          <div
+            className="pointer-events-none fixed z-30 bg-white border border-gray-200 rounded px-2.5 py-1.5 text-xs shadow-lg whitespace-nowrap"
+            style={{
+              left: tooltipX,
+              top: tooltipY - 42,
+              transform: "translateX(-50%)",
+            }}
+          >
+            <span className="font-medium text-gray-800">{tooltip.skin.weapon}</span>
+            <span className="text-gray-400 mx-1">|</span>
+            <span className="text-gray-600">{tooltip.skin.skinName}</span>
+          </div>
+        );
+      })()}
     </div>
   );
 }

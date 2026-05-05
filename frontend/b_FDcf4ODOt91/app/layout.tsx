@@ -1,11 +1,11 @@
 import type { Metadata } from 'next'
-import { Cormorant_Garamond, Geist_Mono } from 'next/font/google'
+import { Noto_Sans, Geist_Mono } from 'next/font/google'
 import './globals.css'
 
-const _cormorant = Cormorant_Garamond({
+const _notoSans = Noto_Sans({
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600'],
-  style: ['normal', 'italic'],
+  weight: ['300', '400', '500', '600', '700'],
+  style: ['normal'],
 })
 const _geistMono = Geist_Mono({ subsets: ['latin'] })
 

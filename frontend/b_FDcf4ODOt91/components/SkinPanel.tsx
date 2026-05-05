@@ -1,6 +1,6 @@
 "use client";
 import { Star } from "lucide-react";
-import { Skin, skinToColor, findSimilarSkins } from "@/lib/skinData";
+import { Skin, skinToColor, findSimilarSkins, RARITY_COLORS } from "@/lib/skinData";
 import { GunLarge, GunSmall } from "./GunPlaceholder";
 
 interface Props {
@@ -23,6 +23,7 @@ export default function SkinPanel({
   const color = skinToColor(skin);
   const isLiked = likedIds.has(skin.id);
   const similar = findSimilarSkins(skin, allSkins, 10);
+  const rarityColor = RARITY_COLORS[skin.rarity] || "#aaa";
 
   return (
     <div className="relative flex flex-col gap-3 w-full h-full">
@@ -74,6 +75,14 @@ export default function SkinPanel({
         <p className="text-sm font-light text-gray-700 leading-tight">
           {skin.skinName}
         </p>
+        <div className="mt-2">
+          <span
+            className="text-[11px] px-2 py-1 rounded text-white font-light"
+            style={{ background: rarityColor }}
+          >
+            {skin.rarity}
+          </span>
+        </div>
       </div>
 
       {/* Similar section */}

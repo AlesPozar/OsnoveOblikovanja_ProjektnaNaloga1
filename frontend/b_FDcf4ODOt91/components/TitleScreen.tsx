@@ -9,7 +9,7 @@ export default function TitleScreen({ onContinue }: Props) {
     <div className="relative w-full h-screen bg-white flex flex-col items-center justify-center overflow-hidden">
       {/* Authors — top left */}
       <div className="absolute top-5 left-6 text-[11px] font-light text-gray-400 tracking-widest">
-        by Domen and Ale&#353;
+        by Ale&#353; and Domen
       </div>
 
       {/* Main title — thin italic, each word a distinct hue from the rainbow */}
@@ -44,11 +44,11 @@ export default function TitleScreen({ onContinue }: Props) {
       </button>
 
       {/* CS2 sticker — bottom right corner */}
-      <div className="absolute bottom-4 right-5 w-20 h-20">
+      <div className="absolute bottom-0 right-16 w-30 h-30">
         <img
           src="CS2Stickers/f36ea9a5aef81d4440bff827d2d2d206.png"
           alt="CS2"
-          className="w-full h-full"
+          className="w-full"
         />
       </div>
     </div>
