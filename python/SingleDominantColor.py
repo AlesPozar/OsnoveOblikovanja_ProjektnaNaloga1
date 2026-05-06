@@ -10,9 +10,9 @@ init(autoreset=True)
 
 dataset = load_dataset("While402/CounterStrike2Skins", split="metadata")
 
-outputFile = open("single_dominant_color_whole222222.txt", "w", encoding="utf-8")
+outputFile = open("single_dominant_color_whole.txt", "w", encoding="utf-8")
 
-#Single Dominant Color Extractor, per whole gun, including the handle and other maybe not paintd parts, but excluding pure ish black/white
+#Single Dominant Color Extractor, per whole gun, including the handle and other maybe not paintd parts, but excluding pure ish black/white and statTrack items(stat track versions of normal skins)
 for item in dataset:
     if(item["exterior"] == "Factory New" and "StatTrak" not in item["name"]):
         print("Weapon found\n")
@@ -57,7 +57,7 @@ for item in dataset:
             #rgb -> hsv, and output
             r, g, b = dominantColor
             h, s, v = rgb_to_hsv(r, g, b)
-            outputFile.write(f"{item['name']}|{item['rarity']}|{item['weapon']}|{h:.2f}|{s:.2f}|{v:.2f}\n")#format: name|rarity|weapon|hue|saturation|value, all are factory new!
+            outputFile.write(f"{item['name']}|{item['rarity']}|{item['imageid']}|{item['weapon']}|{h:.2f}|{s:.2f}|{v:.2f}\n")#format: name|rarity|imageid|weapon|hue|saturation|value, all are factory new!
 
         except RemoteEntryNotFoundError:
             print(f"Skipped: Image not found for {item['name']}")
