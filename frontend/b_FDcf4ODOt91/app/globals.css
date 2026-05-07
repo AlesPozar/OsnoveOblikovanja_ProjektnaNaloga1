@@ -99,6 +99,10 @@
   body {
     @apply bg-background text-foreground font-sans;
   }
+  a {
+    color: #b45309;
+    font-weight: 700;
+  }
 }
 
 /* Per-section title gradient classes — matching the Figma rainbow letter-by-letter style */

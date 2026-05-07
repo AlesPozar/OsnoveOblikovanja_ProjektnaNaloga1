@@ -6,6 +6,8 @@ interface Props {
   onNavClick: (i: number) => void;
 }
 
+const LINKEDIN_URL = "https://www.linkedin.com/in/ale%C5%A1-po%C5%BEar-946854279/";
+
 export default function AboutSection({ currentSection, totalSections, onNavClick }: Props) {
   return (
     <div className="relative w-full h-screen bg-white flex flex-col overflow-hidden">
@@ -44,7 +46,11 @@ export default function AboutSection({ currentSection, totalSections, onNavClick
 
       {/* Authors — bottom left */}
       <div className="absolute bottom-5 left-6 text-[11px] font-light text-gray-400 tracking-widest">
-        by Ale&#353; and Domen
+        by{" "}
+        <a href={LINKEDIN_URL} target="_blank" rel="noreferrer">
+          Ale&#353;
+        </a>{" "}
+        and Domen
       </div>
 
       {/* CS2 sticker — bottom right */}

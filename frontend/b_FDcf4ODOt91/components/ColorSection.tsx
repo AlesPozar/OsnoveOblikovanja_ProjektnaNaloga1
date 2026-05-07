@@ -1,9 +1,16 @@
 "use client";
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useRef } from "react";
 import { Eye, EyeOff, Star, ChevronDown } from "lucide-react";
 import { Skin, getAllWeaponTypes, skinToColor } from "@/lib/skinData";
 import HSVCone from "./HSVCone";
 import SkinPanel from "./SkinPanel";
+
+const STICKER_MESSAGES: Record<string, string> = {
+  "260fx260f": "woosh",
+  "58713ac580bb6a8fdd1db25137a097c078e07c0a3698f4c77b604fae836546e1": "aaggghh",
+  "360fx360f": "hihi 🤭",
+};
+const LINKEDIN_URL = "https://www.linkedin.com/in/ale%C5%A1-po%C5%BEar-946854279/";
 
 interface Props {
   title: string;
@@ -62,6 +69,9 @@ export default function ColorSection({
   const [weaponOpen, setWeaponOpen] = useState(false);
   const [nameOpen, setNameOpen] = useState(false);
   const [ingameMode, setIngameMode] = useState(false);
+  const [likedOnlyActive, setLikedOnlyActive] = useState(false);
+  const [stickerMessage, setStickerMessage] = useState<string | null>(null);
+  const stickerTimerRef = useRef<number | null>(null);
 
   const weaponTypes = useMemo(() => getAllWeaponTypes(skins), [skins]);
 
@@ -84,6 +94,17 @@ export default function ColorSection({
     setNameOpen(false);
   }, []);
 
+  const showStickerMessage = useCallback(() => {
+    setStickerMessage(STICKER_MESSAGES[stickerName] ?? "woosh");
+    if (stickerTimerRef.current !== null) {
+      window.clearTimeout(stickerTimerRef.current);
+    }
+    stickerTimerRef.current = window.setTimeout(() => {
+      setStickerMessage(null);
+      stickerTimerRef.current = null;
+    }, 1800);
+  }, [stickerName]);
+
   const highlightedSkinName =
     highlightId
       ? (skins.find((s) => s.id === highlightId)?.skinName ?? "—")
@@ -101,17 +122,17 @@ export default function ColorSection({
       onClick={closeDropdowns}
     >
       {/* ── TOP BAR ── */}
-      <header className="relative flex items-center justify-between px-6 py-4 flex-shrink-0 mr-13">
+      <header className="relative flex items-center justify-between px-10 py-4 flex-shrink-0">
         {/* Left: rainbow title */}
         <h2
-          className={`text-3xl min-w-[30rem] sm:text-4xl font-light italic tracking-wide leading-none ${titleClass}`}
+          className={`text-4xl min-w-[30rem] sm:text-5xl font-light italic tracking-wide leading-none ${titleClass}`}
           style={{ fontFamily: "inherit" }}
         >
           {title}
         </h2>
 
         {/* Center: subtitle (absolutely centered) */}
-        <span className="absolute left-6 right-0 top-20 text-sm font-light tracking-wider text-gray-400 pointer-events-none">
+        <span className="absolute left-10 right-10 top-20 text-base font-light tracking-wider text-gray-400">
           {subtitle}
         </span>
 
@@ -132,24 +153,24 @@ export default function ColorSection({
             {
               ingameMode ? 
               (<img
-              className="w-35 h-19 mt-1"
-              src="AKIkona/Screenshot 2026-05-05 232657.png"
+              className="w-30 h-auto block"
+              src="AKIkona/group-2.png"
               alt="In-game mode"  />) 
               : (<img
-              className="w-35 h-20"
-              src="AKIkona/Screenshot 2026-05-05 232438.png"
-              alt="In-game mode"  />)
+              className="w-30 h-auto block"
+              src="AKIkona/group-3.png"
+              alt="Whole gun mode"  />)
             }
           </button>
 
           {/* by weapon dropdown */}
           <div className="relative">
             <div className="flex flex-col items-start">
-              <span className="text-[10px] text-gray-400 tracking-widest mb-0.5 uppercase">
+              <span className="text-[11px] font-bold text-gray-400 tracking-widest mb-0.5 uppercase">
                 by weapon:
               </span>
               <button
-                className="flex items-center gap-1 text-xl font-light text-gray-700 hover:text-gray-900 transition-colors"
+                className="flex items-center gap-1 text-2xl font-light text-gray-700 hover:text-gray-900 transition-colors"
                 onClick={(e) => {
                   e.stopPropagation();
                   setWeaponOpen(!weaponOpen);
@@ -163,7 +184,7 @@ export default function ColorSection({
             {weaponOpen && (
               <div className="absolute right-0 top-full mt-1 bg-white border border-gray-100 rounded shadow-xl z-50 max-h-64 overflow-y-auto w-44">
                 <button
-                  className={`block w-full text-left px-3 py-1.5 text-xs font-light hover:bg-gray-50 transition-colors ${
+                  className={`block w-full text-left px-3 py-1.5 text-sm font-light hover:bg-gray-50 transition-colors ${
                     !filterWeapon ? "text-gray-900 font-medium" : "text-gray-500"
                   }`}
                   onClick={(e) => {
@@ -177,7 +198,7 @@ export default function ColorSection({
                 {weaponTypes.map((w) => (
                   <button
                     key={w}
-                    className={`block w-full text-left px-3 py-1.5 text-xs font-light hover:bg-gray-50 transition-colors ${
+                    className={`block w-full text-left px-3 py-1.5 text-sm font-light hover:bg-gray-50 transition-colors ${
                       filterWeapon === w ? "text-gray-900 font-medium" : "text-gray-500"
                     }`}
                     onClick={(e) => {
@@ -196,11 +217,11 @@ export default function ColorSection({
           {/* highlight skin by name dropdown */}
           <div className="relative">
             <div className="flex flex-col items-start">
-              <span className="text-[10px] text-gray-400 tracking-widest mb-0.5 uppercase">
+              <span className="text-[11px] font-bold text-gray-400 tracking-widest mb-0.5 uppercase">
                 highlight skin by name:
               </span>
               <button
-                className="flex items-center gap-1 text-xl font-light text-gray-700 hover:text-gray-900 transition-colors"
+                className="flex items-center gap-1 text-2xl font-light text-gray-700 hover:text-gray-900 transition-colors"
                 onClick={(e) => {
                   e.stopPropagation();
                   setNameOpen(!nameOpen);
@@ -214,7 +235,7 @@ export default function ColorSection({
             {nameOpen && (
               <div className="absolute right-0 top-full mt-1 bg-white border border-gray-100 rounded shadow-xl z-50 max-h-64 overflow-y-auto w-56">
                 <button
-                  className={`block w-full text-left px-3 py-1.5 text-xs font-light hover:bg-gray-50 transition-colors ${
+                  className={`block w-full text-left px-3 py-1.5 text-sm font-light hover:bg-gray-50 transition-colors ${
                     !highlightId ? "text-gray-900 font-medium" : "text-gray-500"
                   }`}
                   onClick={(e) => {
@@ -234,7 +255,7 @@ export default function ColorSection({
                   return (
                     <button
                       key={name}
-                      className={`block w-full text-left px-3 py-1.5 text-xs font-light hover:bg-gray-50 transition-colors ${
+                      className={`block w-full text-left px-3 py-1.5 text-sm font-light hover:bg-gray-50 transition-colors ${
                         highlightId === s?.id
                           ? "text-gray-900 font-medium"
                           : "text-gray-500"
@@ -261,15 +282,20 @@ export default function ColorSection({
 
           {/* Star → liked */}
           <button
-            onClick={onGoToLiked}
+            onClick={() => {
+              setLikedOnlyActive((active) => !active);
+              setHighlightId(null);
+            }}
             className="transition-transform hover:scale-110 ml-1"
+            title="Highlight liked skins"
             aria-label="View liked skins"
+            aria-pressed={likedOnlyActive}
           >
             <Star
               size={26}
               strokeWidth={1.6}
-              fill="none"
-              className={likedIds.size > 0 ? "text-yellow-400" : "text-yellow-300"}
+              fill={likedOnlyActive ? "currentColor" : "none"}
+              className={likedOnlyActive || likedIds.size > 0 ? "text-yellow-400" : "text-yellow-300"}
             />
           </button>
         </div>
@@ -311,10 +337,10 @@ export default function ColorSection({
         >
           {ingameMode ? (
             <div className="flex flex-col items-center justify-center h-full gap-3">
-              <p className="text-xl font-light italic text-gray-400 tracking-wide">
+              <p className="text-2xl font-light italic text-gray-400 tracking-wide">
                 Coming soon
               </p>
-              <p className="text-sm font-light text-gray-300">
+              <p className="text-base font-light text-gray-300">
                 In-game visible parts analysis is not yet available
               </p>
             </div>
@@ -324,6 +350,7 @@ export default function ColorSection({
                 skins={skins}
                 selectedId={selectedSkin?.id ?? null}
                 highlightId={highlightId}
+                focusIds={likedOnlyActive ? likedIds : null}
                 filterWeapon={filterWeapon}
                 onSelect={handleSkinSelect}
                 view={view}
@@ -386,20 +413,34 @@ export default function ColorSection({
       </div>
 
       {/* ── BOTTOM LEFT: authors ── */}
-      <div className="absolute bottom-5 left-6 text-[11px] font-light text-gray-400 tracking-widest">
-        by Ale&#353; and Domen
+      <div className="absolute bottom-5 left-10 text-xs font-light text-gray-400 tracking-widest">
+        by{" "}
+        <a href={LINKEDIN_URL} target="_blank" rel="noreferrer">
+          Ale&#353;
+        </a>{" "}
+        and Domen
       </div>
 
       {/* ── BOTTOM RIGHT: CS2 sticker ── */}
-      <div className="absolute bottom-4 right-16">
-        <div className="w-20 h-20">
+      <div className="absolute bottom-4 right-10">
+        <button
+          type="button"
+          onClick={showStickerMessage}
+          className="relative block w-20 h-20"
+          aria-label="Sticker easter egg"
+        >
+          {stickerMessage && (
+            <span className="absolute -top-8 left-1/2 -translate-x-1/2 rounded border border-gray-100 bg-white px-2 py-1 text-sm font-semibold text-gray-600 shadow whitespace-nowrap">
+              {stickerMessage}
+            </span>
+          )}
           <img
             src={`CS2Stickers/${stickerName}.png`}
             alt="CS2"
             className="w-full object-cover"
             style={{ objectPosition: "right bottom" }}
           />
-        </div>
+        </button>
       </div>
 
       {/* ── RIGHT SIDE: nav dots (fixed to this section's right edge) ──

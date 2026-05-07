@@ -4,18 +4,24 @@ interface Props {
   onContinue: () => void;
 }
 
+const LINKEDIN_URL = "https://www.linkedin.com/in/ale%C5%A1-po%C5%BEar-946854279/";
+
 export default function TitleScreen({ onContinue }: Props) {
   return (
     <div className="relative w-full h-screen bg-white flex flex-col items-center justify-center overflow-hidden">
       {/* Authors — top left */}
-      <div className="absolute top-5 left-6 text-[11px] font-light text-gray-400 tracking-widest">
-        by Ale&#353; and Domen
+      <div className="absolute top-5 left-10 text-xs font-light text-gray-400 tracking-widest">
+        by{" "}
+        <a href={LINKEDIN_URL} target="_blank" rel="noreferrer">
+          Ale&#353;
+        </a>{" "}
+        and Domen
       </div>
 
       {/* Main title — thin italic, each word a distinct hue from the rainbow */}
       <h1
         className="font-light italic text-center leading-tight select-none"
-        style={{ fontSize: "clamp(2.6rem, 6vw, 5.5rem)", letterSpacing: "-0.01em" }}
+        style={{ fontSize: "clamp(2.8rem, 6.3vw, 5.8rem)", letterSpacing: "-0.01em" }}
         aria-label="CS2 Skins Theory — color"
       >
         {/* Each span is a different hue, matching the Figma: */}
@@ -30,7 +36,7 @@ export default function TitleScreen({ onContinue }: Props) {
       {/* /color — small, centered below the title */}
       <p
         className="font-light tracking-[0.35em] text-gray-400 mt-2 select-none"
-        style={{ fontSize: "clamp(0.9rem, 1.5vw, 1.25rem)" }}
+        style={{ fontSize: "clamp(1rem, 1.65vw, 1.35rem)" }}
       >
         /color
       </p>
@@ -38,13 +44,13 @@ export default function TitleScreen({ onContinue }: Props) {
       {/* Continue — very bottom center */}
       <button
         onClick={onContinue}
-        className="absolute bottom-16 text-sm font-light tracking-[0.2em] text-gray-400 hover:text-gray-800 transition-colors duration-300 pb-0.5 border-b border-transparent hover:border-gray-400"
+        className="absolute bottom-16 text-base font-light tracking-[0.2em] text-gray-400 hover:text-gray-800 transition-colors duration-300 pb-0.5 border-b border-transparent hover:border-gray-400"
       >
         continue
       </button>
 
       {/* CS2 sticker — bottom right corner */}
-      <div className="absolute bottom-0 right-16 w-30 h-30">
+      <div className="absolute bottom-0 right-10 w-30 h-30">
         <img
           src="CS2Stickers/f36ea9a5aef81d4440bff827d2d2d206.png"
           alt="CS2"

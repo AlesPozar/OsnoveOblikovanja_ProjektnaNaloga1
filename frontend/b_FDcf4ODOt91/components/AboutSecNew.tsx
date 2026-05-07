@@ -1,8 +1,10 @@
 "use client";
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useRef } from "react";
 import { Eye, EyeOff, Star, ChevronDown } from "lucide-react";
 import { Skin, getAllWeaponTypes, skinToColor } from "@/lib/skinData";
 import SkinPanel from "./SkinPanel";
+
+const LINKEDIN_URL = "https://www.linkedin.com/in/ale%C5%A1-po%C5%BEar-946854279/";
 
 interface Props {
   title: string;
@@ -58,6 +60,9 @@ export default function ColorSection({
   const [weaponOpen, setWeaponOpen] = useState(false);
   const [nameOpen, setNameOpen] = useState(false);
   const [ingameMode, setIngameMode] = useState(false);
+  const [likedOnlyActive, setLikedOnlyActive] = useState(false);
+  const [stickerMessage, setStickerMessage] = useState<string | null>(null);
+  const stickerTimerRef = useRef<number | null>(null);
 
   const weaponTypes = useMemo(() => getAllWeaponTypes(skins), [skins]);
 
@@ -103,6 +108,17 @@ export default function ColorSection({
     setNameOpen(false);
   }, []);
 
+  const showStickerMessage = useCallback(() => {
+    setStickerMessage("raawww");
+    if (stickerTimerRef.current !== null) {
+      window.clearTimeout(stickerTimerRef.current);
+    }
+    stickerTimerRef.current = window.setTimeout(() => {
+      setStickerMessage(null);
+      stickerTimerRef.current = null;
+    }, 1800);
+  }, []);
+
   const highlightedSkinName =
     highlightId ? (skins.find((s) => s.id === highlightId)?.skinName ?? "—") : "—";
 
@@ -117,15 +133,15 @@ export default function ColorSection({
       className="relative w-full h-screen flex flex-col bg-background overflow-hidden"
       onClick={closeDropdowns}
     >
-      <header className="relative flex items-center px-6 py-4 mr-13 mt-5">
+      <header className="relative flex items-center px-10 py-4 mt-5">
         <h2
           className={`absolute left-1/2 transform -translate-x-1/2 text-5xl min-w-[30rem] sm:text-4xl font-light italic text-center tracking-wider leading-none ${titleClass}`}
-          style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)", fontFamily: "inherit" }}
+          style={{ fontSize: "clamp(2.2rem, 4.2vw, 3.8rem)", fontFamily: "inherit" }}
         >
           {title}
         </h2>
 
-        <span className="absolute left-1/2 transform -translate-x-1/2 top-10 text-sm font-light text-center tracking-wider text-gray-400 pointer-events-none">
+        <span className="absolute left-1/2 transform -translate-x-1/2 top-10 text-base font-light text-center tracking-wider text-gray-400">
           {subtitle}
         </span>
       </header>
@@ -153,8 +169,8 @@ export default function ColorSection({
           </div>
         )}
 
-        <div className={`${panelVisible ? "w-1/2" : "flex-1"} min-w-0 flex flex-col items-center justify-center relative`}>
-          <div className="relative flex flex-col items-center z-10" onClick={(e) => e.stopPropagation()}>
+        <div className={`${panelVisible ? "w-1/2" : "flex-1"} pointer-events-none min-w-0 flex flex-col items-center justify-center relative`}>
+          <div className="relative flex flex-col items-center z-10 pointer-events-auto" onClick={(e) => e.stopPropagation()}>
             <div className="relative flex items-center gap-6">
               <button
                 onClick={toggleIngame}
@@ -163,17 +179,17 @@ export default function ColorSection({
                 aria-label="Toggle analysis region"
               >
                 {ingameMode ? (
-                  <img className="w-35 h-19 mt-1" src="AKIkona/Screenshot 2026-05-05 232657.png" alt="In-game mode" />
+                  <img className="w-30 h-auto block" src="AKIkona/group-2.png" alt="In-game mode" />
                 ) : (
-                  <img className="w-35 h-20" src="AKIkona/Screenshot 2026-05-05 232438.png" alt="In-game mode" />
+                  <img className="w-30 h-auto block" src="AKIkona/group-3.png" alt="Whole gun mode" />
                 )}
               </button>
 
               <div className="relative">
                 <div className="flex flex-col items-start">
-                  <span className="text-[10px] text-gray-400 tracking-widest mb-0.5 uppercase">by weapon:</span>
+                  <span className="text-[11px] font-bold text-gray-400 tracking-widest mb-0.5 uppercase">by weapon:</span>
                   <button
-                    className="flex items-center gap-1 text-xl font-light text-gray-700 hover:text-gray-900 transition-colors"
+                    className="flex items-center gap-1 text-2xl font-light text-gray-700 hover:text-gray-900 transition-colors"
                     onClick={(e) => {
                       e.stopPropagation();
                       setWeaponOpen(!weaponOpen);
@@ -187,7 +203,7 @@ export default function ColorSection({
                 {weaponOpen && (
                   <div className="absolute right-0 top-full mt-1 bg-white border border-gray-100 rounded shadow-xl z-50 max-h-64 overflow-y-auto w-44">
                     <button
-                      className={`block w-full text-left px-3 py-1.5 text-xs font-light hover:bg-gray-50 transition-colors ${!filterWeapon ? "text-gray-900 font-medium" : "text-gray-500"}`}
+                      className={`block w-full text-left px-3 py-1.5 text-sm font-light hover:bg-gray-50 transition-colors ${!filterWeapon ? "text-gray-900 font-medium" : "text-gray-500"}`}
                       onClick={(e) => {
                         e.stopPropagation();
                         setFilterWeapon(null);
@@ -199,7 +215,7 @@ export default function ColorSection({
                     {weaponTypes.map((w) => (
                       <button
                         key={w}
-                        className={`block w-full text-left px-3 py-1.5 text-xs font-light hover:bg-gray-50 transition-colors ${filterWeapon === w ? "text-gray-900 font-medium" : "text-gray-500"}`}
+                        className={`block w-full text-left px-3 py-1.5 text-sm font-light hover:bg-gray-50 transition-colors ${filterWeapon === w ? "text-gray-900 font-medium" : "text-gray-500"}`}
                         onClick={(e) => {
                           e.stopPropagation();
                           setFilterWeapon(w);
@@ -215,9 +231,9 @@ export default function ColorSection({
 
               <div className="relative">
                 <div className="flex flex-col items-start">
-                  <span className="text-[10px] text-gray-400 tracking-widest mb-0.5 uppercase">highlight skin by name:</span>
+                  <span className="text-[11px] font-bold text-gray-400 tracking-widest mb-0.5 uppercase">highlight skin by name:</span>
                   <button
-                    className="flex items-center gap-1 text-xl font-light text-gray-700 hover:text-gray-900 transition-colors"
+                    className="flex items-center gap-1 text-2xl font-light text-gray-700 hover:text-gray-900 transition-colors"
                     onClick={(e) => {
                       e.stopPropagation();
                       setNameOpen(!nameOpen);
@@ -231,7 +247,7 @@ export default function ColorSection({
                 {nameOpen && (
                   <div className="absolute right-0 top-full mt-1 bg-white border border-gray-100 rounded shadow-xl z-50 max-h-64 overflow-y-auto w-56">
                     <button
-                      className={`block w-full text-left px-3 py-1.5 text-xs font-light hover:bg-gray-50 transition-colors ${!highlightId ? "text-gray-900 font-medium" : "text-gray-500"}`}
+                      className={`block w-full text-left px-3 py-1.5 text-sm font-light hover:bg-gray-50 transition-colors ${!highlightId ? "text-gray-900 font-medium" : "text-gray-500"}`}
                       onClick={(e) => {
                         e.stopPropagation();
                         setHighlightId(null);
@@ -247,7 +263,7 @@ export default function ColorSection({
                       return (
                         <button
                           key={name}
-                          className={`block w-full text-left px-3 py-1.5 text-xs font-light hover:bg-gray-50 transition-colors ${highlightId === s?.id ? "text-gray-900 font-medium" : "text-gray-500"}`}
+                          className={`block w-full text-left px-3 py-1.5 text-sm font-light hover:bg-gray-50 transition-colors ${highlightId === s?.id ? "text-gray-900 font-medium" : "text-gray-500"}`}
                           onClick={(e) => {
                             e.stopPropagation();
                             const nextId = s?.id ?? null;
@@ -266,15 +282,20 @@ export default function ColorSection({
               </div>
 
               <button
-                onClick={onGoToLiked}
+                onClick={() => {
+                  setLikedOnlyActive((active) => !active);
+                  setHighlightId(null);
+                }}
                 className="transition-transform hover:scale-110 ml-1"
+                title="Highlight liked skins"
                 aria-label="View liked skins"
+                aria-pressed={likedOnlyActive}
               >
                 <Star
                   size={26}
                   strokeWidth={1.6}
-                  fill="none"
-                  className={likedIds.size > 0 ? "text-yellow-400" : "text-yellow-300"}
+                  fill={likedOnlyActive ? "currentColor" : "none"}
+                  className={likedOnlyActive || likedIds.size > 0 ? "text-yellow-400" : "text-yellow-300"}
                 />
               </button>
             </div>
@@ -294,25 +315,30 @@ export default function ColorSection({
                   </marker>
                 </defs>
 
-                <path d="M 340 50 C 240 50, 240 105, 280 128" stroke="#4b5563" strokeWidth="1.5" strokeDasharray="4 4" markerEnd="url(#about-arrow-head)" />
-                <path d="M 680 78 C 581 70, 592 109, 590 118" stroke="#4b5563" strokeWidth="1.5" strokeDasharray="4 4" markerEnd="url(#about-arrow-head)" />
-                <path d="M 440 250 C 380 260, 380 230, 390 220'" stroke="#4b5563" strokeWidth="1.5" strokeDasharray="4 4" markerEnd="url(#about-arrow-head)" />
+                <path d="M 260 50 C 165 50, 172 105, 220 128" stroke="#4b5563" strokeWidth="1.5" strokeDasharray="4 4" markerEnd="url(#about-arrow-head)" />
+                <path d="M 545 78 C 455 70, 468 109, 475 118" stroke="#4b5563" strokeWidth="1.5" strokeDasharray="4 4" markerEnd="url(#about-arrow-head)" />
+                <path d="M 590 225 C 680 260, 675 230, 680 192" stroke="#4b5563" strokeWidth="1.5" strokeDasharray="4 4" markerEnd="url(#about-arrow-head)" />
+                <path d="M 370 250 C 410 260, 380 200, 380 200'" stroke="#4b5563" strokeWidth="1.5" strokeDasharray="4 4" markerEnd="url(#about-arrow-head)" />
 
-                <text x="350" y="42" fill="#9ca3af" fontSize="16" fontWeight="300" fontFamily="inherit">
-                  <tspan x="350" dy="0">select if you want to analyse</tspan>
-                  <tspan x="350" dy="22">whole gun, or only in game</tspan>
-                  <tspan x="350" dy="22">visible parts</tspan>
+                <text x="270" y="42" fill="#9ca3af" fontSize="18" fontWeight="300" fontFamily="inherit">
+                  <tspan x="270" dy="0">select if you want to analyse</tspan>
+                  <tspan x="270" dy="22">whole gun, or only in game</tspan>
+                  <tspan x="270" dy="22">visible parts</tspan>
                 </text>
 
-                <text x="690" y="70" fill="#9ca3af" fontSize="16" fontWeight="300" fontFamily="inherit">
-                  <tspan x="690" dy="0">select the skin you want, and</tspan>
-                  <tspan x="690" dy="22">preview others just like it</tspan>
+                <text x="555" y="70" fill="#9ca3af" fontSize="18" fontWeight="300" fontFamily="inherit">
+                  <tspan x="555" dy="0">select the skin you want, and</tspan>
+                  <tspan x="555" dy="22">preview others just like it</tspan>
                 </text>
 
-                <text x="450" y="240" fill="#9ca3af" fontSize="16" fontWeight="300" fontFamily="inherit">
-                  <tspan x="450" dy="0">if you are looking for a</tspan>
-                  <tspan x="450" dy="22">specific weapon type, select</tspan>
-                  <tspan x="450" dy="22">it here</tspan>
+                <text x="460" y="180" fill="#9ca3af" fontSize="18" fontWeight="300" fontFamily="inherit">
+                  <tspan x="460" dy="50">show only liked</tspan>
+                </text>
+
+                <text x="180" y="240" fill="#9ca3af" fontSize="18" fontWeight="300" fontFamily="inherit">
+                  <tspan x="180" dy="0">if you are looking for a</tspan>
+                  <tspan x="136" dy="22">specific weapon type, select</tspan>
+                  <tspan x="309" dy="22">it here</tspan>
                 </text>
               </svg>
             </div>
@@ -326,7 +352,14 @@ export default function ColorSection({
                   aria-label={`Open side view for ${dotSkin.weapon} | ${dotSkin.skinName}`}
                   title={`${dotSkin.weapon} | ${dotSkin.skinName}`}
                 >
-                  <span className="block h-3.5 w-3.5 rounded-full" style={{ backgroundColor: dotColor }} />
+                  <span
+                    className="block h-3.5 w-3.5 rounded-full"
+                    style={{
+                      backgroundColor:
+                        likedOnlyActive && dotSkin && !likedIds.has(dotSkin.id) ? "#cccccc" : dotColor,
+                      opacity: likedOnlyActive && dotSkin && !likedIds.has(dotSkin.id) ? 0.32 : 1,
+                    }}
+                  />
                 </button>
                 <div className="pointer-events-none hidden lg:block absolute -left-52 -top-12 w-[440px] h-[120px]">
                   <svg className="absolute inset-0 h-full w-full" viewBox="0 0 440 120" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -337,7 +370,7 @@ export default function ColorSection({
                     </defs>
                     <path d="M 410 25 C 350 80, 290 40, 245 60" stroke="#4b5563" strokeWidth="1.5" strokeDasharray="4 4" markerEnd="url(#about-arrow-head-dot)" />
                   </svg>
-                  <span className="absolute left-100 top-0 text-[16px] font-light text-gray-400 w-full">Click ME!</span>
+                  <span className="absolute left-100 top-0 text-[18px] font-light text-gray-400 w-full">Click ME!</span>
                 </div>
               </div>
             )}
@@ -345,19 +378,49 @@ export default function ColorSection({
         </div>
       </div>
 
-      <div className="absolute bottom-5 left-6 text-[11px] font-light text-gray-400 tracking-widest">
-        by Ale&#353; and Domen
+      <div className="absolute bottom-16 left-1/2 z-10 w-[min(58rem,calc(100%-7rem))] -translate-x-1/2 text-center text-[15px] font-light leading-relaxed text-gray-400 sm:bottom-20">
+        <p>
+          This project helps you explore hidden secrets of CS2/CSGO skins and their colors. Data was
+          analysed from{" "}
+          <a href="https://huggingface.co/datasets/While402/CounterStrike2Skins" target="_blank" rel="noreferrer">
+            while402/counterstrike2skins
+          </a>{" "}
+          dataset. We analysed thousands of different skins for ingame weapons and knives. This
+          project was made as part of a subject Design Basics at University of Ljubljana,{" "}
+          <a href="https://www.fri.uni-lj.si/sl" target="_blank" rel="noreferrer">
+            Faculty of Computer Science and Informatics
+          </a>
+          .
+        </p>
       </div>
 
-      <div className="absolute bottom-4 right-16">
-        <div className="w-20 h-20">
+      <div className="absolute bottom-5 left-10 text-xs font-light text-gray-400 tracking-widest">
+        by{" "}
+        <a href={LINKEDIN_URL} target="_blank" rel="noreferrer">
+          Ale&#353;
+        </a>{" "}
+        and Domen
+      </div>
+
+      <div className="absolute bottom-4 right-10">
+        <button
+          type="button"
+          onClick={showStickerMessage}
+          className="relative block w-20 h-20"
+          aria-label="Sticker easter egg"
+        >
+          {stickerMessage && (
+            <span className="absolute -top-8 left-1/2 -translate-x-1/2 rounded border border-gray-100 bg-white px-2 py-1 text-sm font-semibold text-gray-600 shadow whitespace-nowrap">
+              {stickerMessage}
+            </span>
+          )}
           <img
             src={`CS2Stickers/${stickerName}.png`}
             alt="CS2"
             className="w-full object-cover"
             style={{ objectPosition: "right bottom" }}
           />
-        </div>
+        </button>
       </div>
     </div>
   );

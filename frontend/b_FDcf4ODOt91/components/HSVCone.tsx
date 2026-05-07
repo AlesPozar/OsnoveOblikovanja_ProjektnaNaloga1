@@ -1,11 +1,13 @@
 "use client";
 import { useRef, useState, useCallback, useEffect, useMemo } from "react";
+import { createPortal } from "react-dom";
 import { Skin, hsvToRgb } from "@/lib/skinData";
 
 interface Props {
   skins: Skin[];
   selectedId: string | null;
   highlightId: string | null;
+  focusIds?: Set<string> | null;
   filterWeapon: string | null;
   onSelect: (skin: Skin) => void;
   view: "cone" | "circle";
@@ -84,6 +86,7 @@ export default function HSVCone({
   skins,
   selectedId,
   highlightId,
+  focusIds = null,
   filterWeapon,
   onSelect,
   view,
@@ -94,6 +97,7 @@ export default function HSVCone({
     x: number;
     y: number;
   } | null>(null);
+  const [mounted, setMounted] = useState(false);
   const svgRef = useRef<SVGSVGElement>(null);
   const coneCanvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -106,6 +110,21 @@ export default function HSVCone({
   const dragStartXRef = useRef(0);
   const hoverRafRef = useRef<number | null>(null);
   const lastHoverPosRef = useRef<{ x: number; y: number } | null>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const clientToCanvasPoint = useCallback((clientX: number, clientY: number) => {
+    const canvas = coneCanvasRef.current;
+    if (!canvas) return null;
+
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: ((clientX - rect.left) / rect.width) * W,
+      y: ((clientY - rect.top) / rect.height) * H,
+    };
+  }, []);
 
   const scheduleRotationCommit = useCallback(() => {
     if (rafRef.current !== null) return;
@@ -156,20 +175,20 @@ export default function HSVCone({
   const sortedSkins = useMemo(() => {
     const next = [...preparedSkins];
     next.sort((a, b) => {
-      const aScore = a.skin.id === selectedId ? 2 : a.skin.id === highlightId ? 1 : 0;
-      const bScore = b.skin.id === selectedId ? 2 : b.skin.id === highlightId ? 1 : 0;
+      const aScore =
+        a.skin.id === selectedId ? 3 : a.skin.id === highlightId || focusIds?.has(a.skin.id) ? 2 : 0;
+      const bScore =
+        b.skin.id === selectedId ? 3 : b.skin.id === highlightId || focusIds?.has(b.skin.id) ? 2 : 0;
       return aScore - bScore;
     });
     return next;
-  }, [preparedSkins, selectedId, highlightId]);
+  }, [preparedSkins, selectedId, highlightId, focusIds]);
 
   const getConePointAt = useCallback(
     (clientX: number, clientY: number) => {
-      const canvas = coneCanvasRef.current;
-      if (!canvas) return null;
-      const rect = canvas.getBoundingClientRect();
-      const x = clientX - rect.left;
-      const y = clientY - rect.top;
+      const point = clientToCanvasPoint(clientX, clientY);
+      if (!point) return null;
+      const { x, y } = point;
 
       const rotRad = rotationRef.current * DEG2RAD;
       const cosRot = Math.cos(rotRad);
@@ -191,7 +210,7 @@ export default function HSVCone({
 
       return null;
     },
-    [sortedSkins, selectedId]
+    [clientToCanvasPoint, sortedSkins, selectedId]
   );
 
   const drawCone = useCallback(() => {
@@ -216,11 +235,13 @@ export default function HSVCone({
     const rotRad = rotationRef.current * DEG2RAD;
     const cosRot = Math.cos(rotRad);
     const sinRot = Math.sin(rotRad);
+    const hasFocusIds = Boolean(focusIds && focusIds.size > 0);
 
     for (const { skin, color, cone } of sortedSkins) {
       const isSelected = skin.id === selectedId;
       const isHighlighted = skin.id === highlightId;
-      const isDimmed = highlightId !== null && !isHighlighted;
+      const isFocused = focusIds?.has(skin.id) ?? false;
+      const isDimmed = (highlightId !== null && !isHighlighted) || (hasFocusIds && !isFocused);
 
       const x = CX + cone.r * (cone.cos * cosRot - cone.sin * sinRot);
       const y = cone.y;
@@ -242,7 +263,7 @@ export default function HSVCone({
     }
 
     ctx.globalAlpha = 1;
-  }, [sortedSkins, selectedId, highlightId]);
+  }, [sortedSkins, selectedId, highlightId, focusIds]);
 
   const scheduleConeDraw = useCallback(() => {
     if (coneDrawRafRef.current !== null) return;
@@ -264,7 +285,7 @@ export default function HSVCone({
     const hit = getConePointAt(e.clientX, e.clientY);
     if (hit) {
       pendingClickIdRef.current = hit.skin.id;
-      setTooltip({ skin: hit.skin, x: hit.x, y: hit.y });
+      setTooltip({ skin: hit.skin, x: e.clientX, y: e.clientY });
       return;
     }
 
@@ -311,7 +332,7 @@ export default function HSVCone({
           setTooltip(null);
           return;
         }
-        setTooltip({ skin: hit.skin, x: hit.x, y: hit.y });
+        setTooltip({ skin: hit.skin, x: pos.x, y: pos.y });
       });
     },
     [getConePointAt, scheduleConeDraw]
@@ -345,6 +366,8 @@ export default function HSVCone({
       if (clickId) {
         const hit = getConePointAt(e.clientX, e.clientY);
         if (hit && hit.skin.id === clickId) {
+          setTooltip(null);
+          lastHoverPosRef.current = null;
           onSelect(hit.skin);
         }
       }
@@ -378,10 +401,12 @@ export default function HSVCone({
 
   const circleDots = useMemo(() => {
     if (view !== "circle") return null;
+    const hasFocusIds = Boolean(focusIds && focusIds.size > 0);
     return sortedSkins.map(({ skin, color, circle }) => {
       const isSelected = skin.id === selectedId;
       const isHighlighted = skin.id === highlightId;
-      const isDimmed = highlightId !== null && !isHighlighted;
+      const isFocused = focusIds?.has(skin.id) ?? false;
+      const isDimmed = (highlightId !== null && !isHighlighted) || (hasFocusIds && !isFocused);
 
       return (
         <circle
@@ -404,13 +429,10 @@ export default function HSVCone({
           style={{ cursor: "pointer" }}
           onMouseEnter={(e) => {
             if (isDraggingRef.current) return;
-            const svg = svgRef.current;
-            if (!svg) return;
-            const rect = svg.getBoundingClientRect();
             setTooltip({
               skin,
-              x: e.clientX - rect.left,
-              y: e.clientY - rect.top,
+              x: e.clientX,
+              y: e.clientY,
             });
           }}
           onMouseLeave={() => setTooltip(null)}
@@ -422,7 +444,7 @@ export default function HSVCone({
         />
       );
     });
-  }, [view, sortedSkins, selectedId, highlightId, onSelect]);
+  }, [view, sortedSkins, selectedId, highlightId, focusIds, onSelect]);
 
   // Keep the canvas in sync with latest data.
   useEffect(() => {
@@ -464,26 +486,21 @@ export default function HSVCone({
         />
       )}
 
-      {/* Tooltip */}
-      {tooltip && (() => {
-        const canvasRect = view === "circle" ? svgRef.current?.getBoundingClientRect() : coneCanvasRef.current?.getBoundingClientRect();
-        const tooltipX = (canvasRect?.left || 0) + tooltip.x;
-        const tooltipY = (canvasRect?.top || 0) + tooltip.y;
-        return (
-          <div
-            className="pointer-events-none fixed z-30 bg-white border border-gray-200 rounded px-2.5 py-1.5 text-xs shadow-lg whitespace-nowrap"
-            style={{
-              left: tooltipX,
-              top: tooltipY - 42,
-              transform: "translateX(-50%)",
-            }}
-          >
-            <span className="font-medium text-gray-800">{tooltip.skin.weapon}</span>
-            <span className="text-gray-400 mx-1">|</span>
-            <span className="text-gray-600">{tooltip.skin.skinName}</span>
-          </div>
-        );
-      })()}
+      {mounted && tooltip && createPortal(
+        <div
+          className="pointer-events-none fixed z-[100] bg-white border border-gray-200 rounded px-2.5 py-1.5 text-xs shadow-lg whitespace-nowrap"
+          style={{
+            left: tooltip.x,
+            top: tooltip.y - 42,
+            transform: "translateX(-50%)",
+          }}
+        >
+          <span className="font-medium text-gray-800">{tooltip.skin.weapon}</span>
+          <span className="text-gray-400 mx-1">|</span>
+          <span className="text-gray-600">{tooltip.skin.skinName}</span>
+        </div>,
+        document.body
+      )}
     </div>
   );
 }

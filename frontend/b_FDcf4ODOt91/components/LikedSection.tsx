@@ -1,8 +1,10 @@
 "use client";
-import { useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { Star } from "lucide-react";
 import { Skin, skinToColor, RARITY_COLORS } from "@/lib/skinData";
 import { GunSmall } from "./GunPlaceholder";
+
+const LINKEDIN_URL = "https://www.linkedin.com/in/ale%C5%A1-po%C5%BEar-946854279/";
 
 interface Props {
   likedIds: Set<string>;
@@ -22,6 +24,19 @@ export default function LikedSection({
   onNavClick,
 }: Props) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [stickerMessage, setStickerMessage] = useState<string | null>(null);
+  const stickerTimerRef = useRef<number | null>(null);
+
+  const showStickerMessage = useCallback(() => {
+    setStickerMessage("pow pow");
+    if (stickerTimerRef.current !== null) {
+      window.clearTimeout(stickerTimerRef.current);
+    }
+    stickerTimerRef.current = window.setTimeout(() => {
+      setStickerMessage(null);
+      stickerTimerRef.current = null;
+    }, 1800);
+  }, []);
   const likedMap = new Map<string, Skin>();
   for (const dataset of allSkins) {
     for (const skin of dataset) {
@@ -38,7 +53,7 @@ export default function LikedSection({
       <h2
         className="font-light italic text-center mb-2 leading-tight"
         style={{
-          fontSize: "clamp(2rem, 4vw, 3.5rem)",
+          fontSize: "clamp(2.2rem, 4.2vw, 3.8rem)",
           background: "linear-gradient(90deg, #e8a020 0%, #5cc83a 35%, #4a6be0 70%, #9b4de0 100%)",
           WebkitBackgroundClip: "text",
           WebkitTextFillColor: "transparent",
@@ -47,7 +62,7 @@ export default function LikedSection({
       >
         LIKED SKINS
       </h2>
-      <p className="text-center text-sm font-light text-gray-400 mb-10 tracking-wide">
+      <p className="text-center text-base font-light text-gray-400 mb-10 tracking-wide">
         Your personal collection
       </p>
 
@@ -125,18 +140,32 @@ export default function LikedSection({
       )}
 
       {/* Authors */}
-      <div className="absolute bottom-5 left-6 text-[11px] font-light text-gray-400 tracking-widest">
-        by Ale&#353; and Domen
+      <div className="absolute bottom-5 left-10 text-xs font-light text-gray-400 tracking-widest">
+        by{" "}
+        <a href={LINKEDIN_URL} target="_blank" rel="noreferrer">
+          Ale&#353;
+        </a>{" "}
+        and Domen
       </div>
 
       {/* CS2 sticker */}
-      <div className="absolute bottom-4 right-16 w-20 h-20">
+      <button
+        type="button"
+        onClick={showStickerMessage}
+        className="absolute bottom-4 right-10 w-20 h-20"
+        aria-label="Sticker easter egg"
+      >
+        {stickerMessage && (
+          <span className="absolute -top-8 left-1/2 -translate-x-1/2 rounded border border-gray-100 bg-white px-2 py-1 text-sm font-semibold text-gray-600 shadow whitespace-nowrap">
+            {stickerMessage}
+          </span>
+        )}
         <img
           src="CS2Stickers/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJai0ki7VeTHjNqoO26H9ml29Zfn_1XiDgnwk5fy_B1T4P6hJqJvePPDXj_Jkr51seI4Sn_qwR9-tjiHyN2ocX3E.png"
           alt="CS2"
           className="w-full"
         />
-      </div>
+      </button>
 
       {/* Nav dots */}
       <nav
@@ -160,6 +189,7 @@ export default function LikedSection({
           </button>
         ))}
       </nav>
+
     </div>
   );
 }
