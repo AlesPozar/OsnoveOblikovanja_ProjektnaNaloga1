@@ -1,9 +1,9 @@
 "use client";
 import { useState, useRef, useCallback, useEffect } from "react";
 import TitleScreen from "@/components/TitleScreen";
-import AboutSection from "@/components/AboutSection";
 import ColorSection from "@/components/ColorSection";
 import LikedSection from "@/components/LikedSection";
+import AboutSecNew from "@/components/AboutSecNew";
 import { dominantSkins, averageSkins, weightedSkins } from "@/lib/skinData";
 
 const TOTAL_SECTIONS = 5;
@@ -47,11 +47,15 @@ export default function Home() {
       if (!el) return;
       const obs = new IntersectionObserver(
         ([entry]) => {
-          if (entry.isIntersecting && entry.intersectionRatio >= 0.45) {
+          // Use a center viewport band so tall sections can still become active.
+          if (entry.isIntersecting) {
             setCurrentSection(i);
           }
         },
-        { threshold: 0.45 }
+        {
+          threshold: 0,
+          rootMargin: "-45% 0px -45% 0px",
+        }
       );
       obs.observe(el);
       observers.push(obs);
@@ -74,7 +78,20 @@ export default function Home() {
     <div className="bg-white">
       {/* Section 0: About */}
       <div ref={(el) => { sectionRefs.current[SECTION_ABOUT] = el; }}>
-        <AboutSection {...navProps} />
+        <AboutSecNew
+          title="ABOUT THIS PROJECT"
+          titleClass="title-dom"
+          subtitle="Learn about this project and how to use it"
+          skins={dominantSkins}
+          likedIds={likedIds}
+          onLike={handleLike}
+          onGoToLiked={() => scrollToSection(SECTION_LIKED)}
+          analysisMode={analysisMode}
+          onAnalysisModeChange={setAnalysisMode}
+          sectionIndex={SECTION_ABOUT}
+          stickerName="256fx256f"
+          {...navProps}
+        />
       </div>
 
       {/* Section 1: Dominant Color */}
