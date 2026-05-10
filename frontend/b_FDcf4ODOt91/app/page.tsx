@@ -125,7 +125,7 @@ export default function Home() {
           analysisMode={analysisMode}
           onAnalysisModeChange={setAnalysisMode}
           sectionIndex={SECTION_AVERAGE}
-          stickerName="58713ac580bb6a8fdd1db25137a097c078e07c0a3698f4c77b604fae836546e1"
+          stickerName="smallpp"
           {...navProps}
         />
       </div>

@@ -52,9 +52,8 @@ export default function LikedSection({
     <div className="relative min-h-screen bg-white px-10 pt-16 pb-20 overflow-hidden">
       {/* Title */}
       <h2
-        className="rainbow-title-safe font-light italic text-center mb-2"
+        className="w-full text-4xl sm:text-5xl rainbow-title-safe font-light italic text-center mb-2"
         style={{
-          fontSize: "clamp(2.2rem, 4.2vw, 3.8rem)",
           background: "linear-gradient(90deg, #e8a020 0%, #5cc83a 35%, #4a6be0 70%, #9b4de0 100%)",
           WebkitBackgroundClip: "text",
           WebkitTextFillColor: "transparent",

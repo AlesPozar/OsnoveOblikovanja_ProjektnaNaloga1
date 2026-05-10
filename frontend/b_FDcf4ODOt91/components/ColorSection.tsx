@@ -413,7 +413,7 @@ export default function ColorSection({
       </div>
 
       {/* ── BOTTOM LEFT: authors ── */}
-      <div className="absolute bottom-5 left-10 text-xs font-light text-gray-400 tracking-widest">
+      <div className="absolute bottom-5 left-12 text-xs font-light text-gray-400 tracking-widest">
         by{" "}
         <a href={LINKEDIN_URL} target="_blank" rel="noreferrer">
           Ale&#353;
@@ -422,7 +422,7 @@ export default function ColorSection({
       </div>
 
       {/* ── BOTTOM RIGHT: CS2 sticker ── */}
-      <div className="absolute bottom-4 right-10">
+      <div className="absolute bottom-4 right-6">
         <button
           type="button"
           onClick={showStickerMessage}

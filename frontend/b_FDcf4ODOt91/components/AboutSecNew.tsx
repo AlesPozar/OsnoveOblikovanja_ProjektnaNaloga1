@@ -135,8 +135,8 @@ export default function ColorSection({
     >
       <header className="relative flex items-center px-10 py-4 mt-5">
         <h2
-          className={`rainbow-title-safe absolute left-1/2 transform -translate-x-1/2 text-5xl min-w-[30rem] sm:text-4xl font-light italic text-center tracking-wider ${titleClass}`}
-          style={{ fontSize: "clamp(2.2rem, 4.2vw, 3.8rem)", fontFamily: "inherit" }}
+          className={`rainbow-title-safe absolute left-1/2 transform -translate-x-1/2 text-4xl sm:text-5xl min-w-[30rem] font-light italic text-center tracking-wider ${titleClass}`}
+          style={{fontFamily: "inherit" }}
         >
           {title}
         </h2>
@@ -394,7 +394,7 @@ export default function ColorSection({
         </p>
       </div>
 
-      <div className="absolute bottom-5 left-10 text-xs font-light text-gray-400 tracking-widest">
+      <div className="absolute bottom-5 left-12 text-xs font-light text-gray-400 tracking-widest">
         by{" "}
         <a href={LINKEDIN_URL} target="_blank" rel="noreferrer">
           Ale&#353;
@@ -402,7 +402,7 @@ export default function ColorSection({
         and Domen
       </div>
 
-      <div className="absolute bottom-4 right-10">
+      <div className="absolute bottom-4 right-6">
         <button
           type="button"
           onClick={showStickerMessage}
