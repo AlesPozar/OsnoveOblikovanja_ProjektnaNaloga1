@@ -7,7 +7,7 @@ import SkinPanel from "./SkinPanel";
 
 const STICKER_MESSAGES: Record<string, string> = {
   "260fx260f": "woosh",
-  "58713ac580bb6a8fdd1db25137a097c078e07c0a3698f4c77b604fae836546e1": "aaggghh",
+  "smallpp": "aaggghh",
   "360fx360f": "hihi 🤭",
 };
 const LINKEDIN_URL = "https://www.linkedin.com/in/ale%C5%A1-po%C5%BEar-946854279/";
@@ -125,14 +125,14 @@ export default function ColorSection({
       <header className="relative flex items-center justify-between px-10 py-4 flex-shrink-0">
         {/* Left: rainbow title */}
         <h2
-          className={`text-4xl min-w-[30rem] sm:text-5xl font-light italic tracking-wide leading-none ${titleClass}`}
+          className={`rainbow-title-safe text-4xl min-w-[35rem] sm:text-5xl font-light italic tracking-wide ${titleClass}`}
           style={{ fontFamily: "inherit" }}
         >
           {title}
         </h2>
 
         {/* Center: subtitle (absolutely centered) */}
-        <span className="absolute left-10 right-10 top-20 text-base font-light tracking-wider text-gray-400">
+        <span className="absolute left-12 right-10 top-20 text-base font-light tracking-wider text-gray-400">
           {subtitle}
         </span>
 

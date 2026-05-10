@@ -2,6 +2,7 @@
 import { Star } from "lucide-react";
 import { Skin, skinToColor, findSimilarSkins, RARITY_COLORS } from "@/lib/skinData";
 import { GunLarge, GunSmall } from "./GunPlaceholder";
+import SteamMarketLink from "./SteamMarketLink";
 
 interface Props {
   skin: Skin | null;
@@ -27,6 +28,7 @@ export default function SkinPanel({
 
   return (
     <div className="relative flex flex-col gap-3 w-full h-full">
+      <SteamMarketLink skin={skin} className="absolute left-0 top-0 z-40" />
       {/* Star like button — top-right of panel */}
       <button
         onClick={() => onLike(skin.id)}

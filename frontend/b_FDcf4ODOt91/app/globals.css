@@ -125,6 +125,14 @@
   background-clip: text;
 }
 
+.rainbow-title-safe {
+  display: inline-block;
+  line-height: 1.16;
+  padding: 0.08em 0.22em 0.14em 0.08em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
 /* Average: similar full rainbow */
 .title-avg {
   background: linear-gradient(90deg,

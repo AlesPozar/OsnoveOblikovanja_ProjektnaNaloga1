@@ -135,7 +135,7 @@ export default function ColorSection({
     >
       <header className="relative flex items-center px-10 py-4 mt-5">
         <h2
-          className={`absolute left-1/2 transform -translate-x-1/2 text-5xl min-w-[30rem] sm:text-4xl font-light italic text-center tracking-wider leading-none ${titleClass}`}
+          className={`rainbow-title-safe absolute left-1/2 transform -translate-x-1/2 text-5xl min-w-[30rem] sm:text-4xl font-light italic text-center tracking-wider ${titleClass}`}
           style={{ fontSize: "clamp(2.2rem, 4.2vw, 3.8rem)", fontFamily: "inherit" }}
         >
           {title}

@@ -9,7 +9,6 @@ const LINKEDIN_URL = "https://www.linkedin.com/in/ale%C5%A1-po%C5%BEar-946854279
 export default function TitleScreen({ onContinue }: Props) {
   return (
     <div className="relative w-full h-screen bg-white flex flex-col items-center justify-center overflow-hidden">
-      {/* Authors — top left */}
       <div className="absolute top-5 left-10 text-xs font-light text-gray-400 tracking-widest">
         by{" "}
         <a href={LINKEDIN_URL} target="_blank" rel="noreferrer">
@@ -18,30 +17,50 @@ export default function TitleScreen({ onContinue }: Props) {
         and Domen
       </div>
 
-      {/* Main title — thin italic, each word a distinct hue from the rainbow */}
       <h1
-        className="font-light italic text-center leading-tight select-none"
-        style={{ fontSize: "clamp(2.8rem, 6.3vw, 5.8rem)", letterSpacing: "-0.01em" }}
-        aria-label="CS2 Skins Theory — color"
+        className="w-fit font-light italic text-center leading-tight select-none"
+        style={{ fontSize: "clamp(2.8rem, 6.3vw, 5.8rem)" }}
+        aria-label="CS2 Skins Theory - color"
       >
-        {/* Each span is a different hue, matching the Figma: */}
-        {/* CS2 → amber/orange */}
-        <span style={{ color: "#e8a020" }}>CS2</span>{" "}
-        {/* SKINS → lime green */}
-        <span style={{ color: "#5cc83a" }}>SKINS</span>{" "}
-        {/* THEORY → blue-purple */}
-        <span style={{ color: "#4a6be0" }}>THEORY</span>
+        <span
+          className="inline-block pr-[0.08em] bg-clip-text text-transparent"
+          style={{
+            backgroundImage: "linear-gradient(90deg, #e8a020, #8dc83a)",
+            WebkitTextFillColor: "transparent",
+          }}
+        >
+          CS2
+        </span>{" "}
+        <span
+          className="relative inline-block pr-[0.08em] bg-clip-text text-transparent"
+          style={{
+            backgroundImage: "linear-gradient(90deg, #8dc83a, #22b8a0)",
+            WebkitTextFillColor: "transparent",
+          }}
+        >
+          SKINS
+          <span
+            aria-hidden="true"
+            className="absolute top-[calc(100%_-_1em)] left-[calc(100%_-_0.2em)] whitespace-nowrap font-light not-italic tracking-[0.35em] text-gray-400"
+            style={{
+              fontSize: "clamp(1rem, 1.65vw, 1.35rem)",
+              WebkitTextFillColor: "#9ca3af",
+            }}
+          >
+            /color
+          </span>
+        </span>{" "}
+        <span
+          className="inline-block pr-[0.15em] bg-clip-text text-transparent"
+          style={{
+            backgroundImage: "linear-gradient(90deg, #4060e8, #c020a0)",
+            WebkitTextFillColor: "transparent",
+          }}
+        >
+          THEORY
+        </span>
       </h1>
 
-      {/* /color — small, centered below the title */}
-      <p
-        className="font-light tracking-[0.35em] text-gray-400 mt-2 select-none"
-        style={{ fontSize: "clamp(1rem, 1.65vw, 1.35rem)" }}
-      >
-        /color
-      </p>
-
-      {/* Continue — very bottom center */}
       <button
         onClick={onContinue}
         className="absolute bottom-16 text-base font-light tracking-[0.2em] text-gray-400 hover:text-gray-800 transition-colors duration-300 pb-0.5 border-b border-transparent hover:border-gray-400"
@@ -49,7 +68,6 @@ export default function TitleScreen({ onContinue }: Props) {
         continue
       </button>
 
-      {/* CS2 sticker — bottom right corner */}
       <div className="absolute bottom-0 right-10 w-30 h-30">
         <img
           src="CS2Stickers/f36ea9a5aef81d4440bff827d2d2d206.png"
