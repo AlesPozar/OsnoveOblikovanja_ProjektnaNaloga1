@@ -12,11 +12,13 @@ const SECTION_DOMINANT = 1;
 const SECTION_AVERAGE = 2;
 const SECTION_WEIGHTED = 3;
 const SECTION_LIKED = 4;
+const LIKED_IDS_STORAGE_KEY = "cs2-skins-liked-ids";
 
 export default function Home() {
   const [showMain, setShowMain] = useState(false);
   const [currentSection, setCurrentSection] = useState(SECTION_ABOUT);
   const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
+  const [likedIdsReady, setLikedIdsReady] = useState(false);
   const [analysisMode, setAnalysisMode] = useState<"whole" | "ingame">("whole");
   const [hasDraggedColorGraph, setHasDraggedColorGraph] = useState(false);
 
@@ -38,6 +40,32 @@ export default function Home() {
       return next;
     });
   }, []);
+
+  useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem(LIKED_IDS_STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          setLikedIds(new Set(parsed.filter((id): id is string => typeof id === "string")));
+        }
+      }
+    } catch {
+      // Ignore unavailable or malformed localStorage and keep the in-memory set.
+    } finally {
+      setLikedIdsReady(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!likedIdsReady) return;
+
+    try {
+      window.localStorage.setItem(LIKED_IDS_STORAGE_KEY, JSON.stringify(Array.from(likedIds)));
+    } catch {
+      // Persistence is best-effort; liking should still work if storage is unavailable.
+    }
+  }, [likedIds, likedIdsReady]);
 
   const handleColorGraphDrag = useCallback(() => {
     setHasDraggedColorGraph(true);
