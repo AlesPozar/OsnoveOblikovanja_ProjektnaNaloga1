@@ -18,6 +18,7 @@ export default function Home() {
   const [currentSection, setCurrentSection] = useState(SECTION_ABOUT);
   const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
   const [analysisMode, setAnalysisMode] = useState<"whole" | "ingame">("whole");
+  const [hasDraggedColorGraph, setHasDraggedColorGraph] = useState(false);
 
   const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -36,6 +37,10 @@ export default function Home() {
       else next.add(id);
       return next;
     });
+  }, []);
+
+  const handleColorGraphDrag = useCallback(() => {
+    setHasDraggedColorGraph(true);
   }, []);
 
   // Intersection observer — update active section dot
@@ -106,6 +111,8 @@ export default function Home() {
           onGoToLiked={() => scrollToSection(SECTION_LIKED)}
           analysisMode={analysisMode}
           onAnalysisModeChange={setAnalysisMode}
+          showDragHint={!hasDraggedColorGraph}
+          onGraphDrag={handleColorGraphDrag}
           sectionIndex={SECTION_DOMINANT}
           stickerName="260fx260f"
           {...navProps}
@@ -124,6 +131,8 @@ export default function Home() {
           onGoToLiked={() => scrollToSection(SECTION_LIKED)}
           analysisMode={analysisMode}
           onAnalysisModeChange={setAnalysisMode}
+          showDragHint={!hasDraggedColorGraph}
+          onGraphDrag={handleColorGraphDrag}
           sectionIndex={SECTION_AVERAGE}
           stickerName="smallpp"
           {...navProps}
@@ -142,6 +151,8 @@ export default function Home() {
           onGoToLiked={() => scrollToSection(SECTION_LIKED)}
           analysisMode={analysisMode}
           onAnalysisModeChange={setAnalysisMode}
+          showDragHint={!hasDraggedColorGraph}
+          onGraphDrag={handleColorGraphDrag}
           sectionIndex={SECTION_WEIGHTED}
           stickerName="360fx360f"
           {...navProps}

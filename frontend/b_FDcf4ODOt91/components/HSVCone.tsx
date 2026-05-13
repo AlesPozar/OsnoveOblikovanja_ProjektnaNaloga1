@@ -10,6 +10,8 @@ interface Props {
   focusIds?: Set<string> | null;
   filterWeapon: string | null;
   onSelect: (skin: Skin) => void;
+  showDragHint?: boolean;
+  onGraphDrag?: () => void;
   view: "cone" | "circle";
 }
 
@@ -24,6 +26,26 @@ const CONE_BOT_Y = 490;   // tip Y (value = 0 → black)
 const CONE_R = 220;       // max radius at top
 
 const DEG2RAD = Math.PI / 180;
+const RAD2DEG = 180 / Math.PI;
+
+type PreparedSkin = {
+  skin: Skin;
+  h: number;
+  s: number;
+  v: number;
+  color: string;
+  zIndex: number;
+  circle: {
+    x: number;
+    y: number;
+  };
+  cone: {
+    y: number;
+    r: number;
+    cos: number;
+    sin: number;
+  };
+};
 
 function clamp01(value: number) {
   if (!Number.isFinite(value)) return 0;
@@ -82,6 +104,39 @@ function hsvToCircleXY(h: number, s: number, rotDeg: number) {
   };
 }
 
+function normalizeAngleDelta(delta: number) {
+  return ((((delta + 180) % 360) + 360) % 360) - 180;
+}
+
+function getInteractionLayer(skin: Skin, selectedId: string | null, highlightId: string | null, focusIds: Set<string> | null) {
+  if (skin.id === selectedId) return 3;
+  if (skin.id === highlightId || focusIds?.has(skin.id)) return 2;
+  return 0;
+}
+
+function compareInteractionLayers(
+  aSkin: Skin,
+  bSkin: Skin,
+  selectedId: string | null,
+  highlightId: string | null,
+  focusIds: Set<string> | null
+) {
+  return getInteractionLayer(aSkin, selectedId, highlightId, focusIds) - getInteractionLayer(bSkin, selectedId, highlightId, focusIds);
+}
+
+function compareDotLayers(
+  a: PreparedSkin,
+  b: PreparedSkin,
+  selectedId: string | null,
+  highlightId: string | null,
+  focusIds: Set<string> | null
+) {
+  const layerOrder = compareInteractionLayers(a.skin, b.skin, selectedId, highlightId, focusIds);
+  if (layerOrder !== 0) return layerOrder;
+  if (a.zIndex !== b.zIndex) return a.zIndex - b.zIndex;
+  return a.skin.id.localeCompare(b.skin.id);
+}
+
 export default function HSVCone({
   skins,
   selectedId,
@@ -89,6 +144,8 @@ export default function HSVCone({
   focusIds = null,
   filterWeapon,
   onSelect,
+  showDragHint = false,
+  onGraphDrag,
   view,
 }: Props) {
   const [rotation, setRotation] = useState(0);
@@ -98,6 +155,7 @@ export default function HSVCone({
     y: number;
   } | null>(null);
   const [mounted, setMounted] = useState(false);
+  const [renderDragHint, setRenderDragHint] = useState(showDragHint);
   const svgRef = useRef<SVGSVGElement>(null);
   const coneCanvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -108,12 +166,28 @@ export default function HSVCone({
   const coneDrawRafRef = useRef<number | null>(null);
   const pendingClickIdRef = useRef<string | null>(null);
   const dragStartXRef = useRef(0);
+  const dragStartYRef = useRef(0);
+  const lastAngleRef = useRef(0);
+  const dragNotifiedRef = useRef(false);
   const hoverRafRef = useRef<number | null>(null);
   const lastHoverPosRef = useRef<{ x: number; y: number } | null>(null);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (showDragHint) {
+      setRenderDragHint(true);
+      return;
+    }
+
+    const timeout = window.setTimeout(() => {
+      setRenderDragHint(false);
+    }, 700);
+
+    return () => window.clearTimeout(timeout);
+  }, [showDragHint]);
 
   const clientToCanvasPoint = useCallback((clientX: number, clientY: number) => {
     const canvas = coneCanvasRef.current;
@@ -126,6 +200,16 @@ export default function HSVCone({
     };
   }, []);
 
+  const clientToCircleAngle = useCallback((clientX: number, clientY: number) => {
+    const svg = svgRef.current;
+    if (!svg) return null;
+
+    const rect = svg.getBoundingClientRect();
+    const x = clientX - (rect.left + rect.width / 2);
+    const y = clientY - (rect.top + rect.height / 2);
+    return Math.atan2(y, x) * RAD2DEG;
+  }, []);
+
   const scheduleRotationCommit = useCallback(() => {
     if (rafRef.current !== null) return;
     rafRef.current = window.requestAnimationFrame(() => {
@@ -134,11 +218,22 @@ export default function HSVCone({
     });
   }, []);
 
+  const notifyGraphDrag = useCallback(
+    (clientX: number, clientY: number) => {
+      const dx = clientX - dragStartXRef.current;
+      const dy = clientY - dragStartYRef.current;
+      if (dragNotifiedRef.current || dx * dx + dy * dy <= 16) return;
+      dragNotifiedRef.current = true;
+      onGraphDrag?.();
+    },
+    [onGraphDrag]
+  );
+
   const visibleSkins = useMemo(() => {
     return filterWeapon ? skins.filter((s) => s.weapon === filterWeapon) : skins;
   }, [skins, filterWeapon]);
 
-  const preparedSkins = useMemo(() => {
+  const preparedSkins = useMemo<PreparedSkin[]>(() => {
     return visibleSkins.map((skin) => {
       const { h, s, v } = normalizeHSV(skin.hue, skin.saturation, skin.value);
 
@@ -167,22 +262,40 @@ export default function HSVCone({
         sin: Math.sin(coneThetaRad),
       };
 
-      return { skin, h, s, v, color, circle, cone };
+      return { skin, h, s, v, color, zIndex: v, circle, cone };
     });
   }, [visibleSkins]);
 
-  // Sort so dimmed dots render first, selected dot last (on top)
+  // Sort low-Value dots behind high-Value dots, with active dots still on top.
   const sortedSkins = useMemo(() => {
     const next = [...preparedSkins];
-    next.sort((a, b) => {
-      const aScore =
-        a.skin.id === selectedId ? 3 : a.skin.id === highlightId || focusIds?.has(a.skin.id) ? 2 : 0;
-      const bScore =
-        b.skin.id === selectedId ? 3 : b.skin.id === highlightId || focusIds?.has(b.skin.id) ? 2 : 0;
-      return aScore - bScore;
-    });
+    next.sort((a, b) => compareDotLayers(a, b, selectedId, highlightId, focusIds));
     return next;
   }, [preparedSkins, selectedId, highlightId, focusIds]);
+
+  const getConeRenderSkins = useCallback(
+    (rotDeg: number) => {
+      const rotRad = rotDeg * DEG2RAD;
+      const sinRot = Math.sin(rotRad);
+      const cosRot = Math.cos(rotRad);
+      const next = [...preparedSkins];
+
+      next.sort((a, b) => {
+        const layerOrder = compareInteractionLayers(a.skin, b.skin, selectedId, highlightId, focusIds);
+        if (layerOrder !== 0) return layerOrder;
+
+        const aDepth = a.cone.r * (a.cone.cos * sinRot + a.cone.sin * cosRot);
+        const bDepth = b.cone.r * (b.cone.cos * sinRot + b.cone.sin * cosRot);
+        const aDepthIndex = a.zIndex + aDepth / (CONE_R * 4);
+        const bDepthIndex = b.zIndex + bDepth / (CONE_R * 4);
+        if (aDepthIndex !== bDepthIndex) return aDepthIndex - bDepthIndex;
+        return a.skin.id.localeCompare(b.skin.id);
+      });
+
+      return next;
+    },
+    [preparedSkins, selectedId, highlightId, focusIds]
+  );
 
   const getConePointAt = useCallback(
     (clientX: number, clientY: number) => {
@@ -194,9 +307,11 @@ export default function HSVCone({
       const cosRot = Math.cos(rotRad);
       const sinRot = Math.sin(rotRad);
 
-      // Search top-most first (selected/highlight are rendered later)
-      for (let i = sortedSkins.length - 1; i >= 0; i--) {
-        const { skin, cone } = sortedSkins[i];
+      const renderSkins = getConeRenderSkins(rotationRef.current);
+
+      // Search top-most first using the same depth order as the canvas render.
+      for (let i = renderSkins.length - 1; i >= 0; i--) {
+        const { skin, cone } = renderSkins[i];
         const px = CX + cone.r * (cone.cos * cosRot - cone.sin * sinRot);
         const py = cone.y;
         const r = skin.id === selectedId ? 7 : 4;
@@ -210,7 +325,7 @@ export default function HSVCone({
 
       return null;
     },
-    [clientToCanvasPoint, sortedSkins, selectedId]
+    [clientToCanvasPoint, getConeRenderSkins, selectedId]
   );
 
   const drawCone = useCallback(() => {
@@ -237,7 +352,7 @@ export default function HSVCone({
     const sinRot = Math.sin(rotRad);
     const hasFocusIds = Boolean(focusIds && focusIds.size > 0);
 
-    for (const { skin, color, cone } of sortedSkins) {
+    for (const { skin, color, cone } of getConeRenderSkins(rotationRef.current)) {
       const isSelected = skin.id === selectedId;
       const isHighlighted = skin.id === highlightId;
       const isFocused = focusIds?.has(skin.id) ?? false;
@@ -263,7 +378,7 @@ export default function HSVCone({
     }
 
     ctx.globalAlpha = 1;
-  }, [sortedSkins, selectedId, highlightId, focusIds]);
+  }, [getConeRenderSkins, selectedId, highlightId, focusIds]);
 
   const scheduleConeDraw = useCallback(() => {
     if (coneDrawRafRef.current !== null) return;
@@ -276,7 +391,10 @@ export default function HSVCone({
   const handlePointerDown = (e: React.PointerEvent<SVGSVGElement>) => {
     if ((e.target as Element).closest(".skin-dot")) return;
     isDraggingRef.current = true;
-    lastXRef.current = e.clientX;
+    dragStartXRef.current = e.clientX;
+    dragStartYRef.current = e.clientY;
+    lastAngleRef.current = clientToCircleAngle(e.clientX, e.clientY) ?? 0;
+    dragNotifiedRef.current = false;
     (e.currentTarget as SVGSVGElement).setPointerCapture(e.pointerId);
     setTooltip(null);
   };
@@ -292,6 +410,8 @@ export default function HSVCone({
     pendingClickIdRef.current = null;
     isDraggingRef.current = true;
     dragStartXRef.current = e.clientX;
+    dragStartYRef.current = e.clientY;
+    dragNotifiedRef.current = false;
     lastXRef.current = e.clientX;
     (e.currentTarget as HTMLCanvasElement).setPointerCapture(e.pointerId);
     setTooltip(null);
@@ -300,12 +420,15 @@ export default function HSVCone({
   const handlePointerMove = useCallback(
     (e: React.PointerEvent<SVGSVGElement>) => {
       if (!isDraggingRef.current) return;
-      const delta = e.clientX - lastXRef.current;
-      lastXRef.current = e.clientX;
-      rotationRef.current = rotationRef.current + delta * 0.5;
+      const angle = clientToCircleAngle(e.clientX, e.clientY);
+      if (angle === null) return;
+      const delta = normalizeAngleDelta(angle - lastAngleRef.current);
+      lastAngleRef.current = angle;
+      rotationRef.current = rotationRef.current + delta;
+      notifyGraphDrag(e.clientX, e.clientY);
       scheduleRotationCommit();
     },
-    [scheduleRotationCommit]
+    [clientToCircleAngle, notifyGraphDrag, scheduleRotationCommit]
   );
 
   const handleConePointerMove = useCallback(
@@ -313,7 +436,8 @@ export default function HSVCone({
       if (isDraggingRef.current) {
         const delta = e.clientX - lastXRef.current;
         lastXRef.current = e.clientX;
-        rotationRef.current = rotationRef.current + delta * 0.5;
+        rotationRef.current = rotationRef.current - delta * 0.5;
+        notifyGraphDrag(e.clientX, e.clientY);
         scheduleConeDraw();
         setTooltip((prev) => (prev ? null : prev));
         return;
@@ -335,7 +459,7 @@ export default function HSVCone({
         setTooltip({ skin: hit.skin, x: pos.x, y: pos.y });
       });
     },
-    [getConePointAt, scheduleConeDraw]
+    [getConePointAt, notifyGraphDrag, scheduleConeDraw]
   );
 
   const endDrag = useCallback(() => {
@@ -345,6 +469,7 @@ export default function HSVCone({
   const handleConePointerCancel = useCallback(() => {
     isDraggingRef.current = false;
     pendingClickIdRef.current = null;
+    dragNotifiedRef.current = false;
   }, []);
 
   const handleConePointerUp = useCallback(
@@ -357,6 +482,7 @@ export default function HSVCone({
 
       const clickId = pendingClickIdRef.current;
       pendingClickIdRef.current = null;
+      dragNotifiedRef.current = false;
 
       // If pointer moved significantly, treat it as a drag.
       if (wasDragging && Math.abs(e.clientX - dragStartXRef.current) > 4) {
@@ -460,6 +586,34 @@ export default function HSVCone({
 
   return (
     <div className="relative select-none w-full flex justify-center items-center">
+      {renderDragHint && (view === "cone" || view === "circle") && (
+        <div
+          className={`pointer-events-none hidden lg:block absolute -top-9 left-1/2 z-10 h-[52px] w-[230px] -translate-x-1/2 transition-opacity duration-700 ease-out ${
+            showDragHint ? "opacity-100" : "opacity-0"
+          }`}
+        >
+          <svg
+            className="absolute inset-0 h-full w-full"
+            viewBox="0 0 230 52"
+            preserveAspectRatio="none"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <defs>
+              <marker id="hsv-drag-arrow-head" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#4b5563" />
+              </marker>
+            </defs>
+            <path d="M 72 15 C 70 15, 66 22, 44 22" stroke="#4b5563" strokeWidth="1.5" strokeDasharray="4 4" markerEnd="url(#hsv-drag-arrow-head)" />
+            <path d="M 158 15 C 160 15, 164 22, 186 22" stroke="#4b5563" strokeWidth="1.5" strokeDasharray="4 4" markerEnd="url(#hsv-drag-arrow-head)" />
+          </svg>
+          <span className="absolute left-1/2 top-0 w-full -translate-x-1/2 text-center text-[18px] font-light text-gray-400">
+            Drag ME!
+          </span>
+        </div>
+      )}
+
       {view === "circle" ? (
         <svg
           ref={svgRef}

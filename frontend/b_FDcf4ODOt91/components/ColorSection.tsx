@@ -28,6 +28,8 @@ interface Props {
   onNavClick: (i: number) => void;
   sectionIndex: number;
   stickerName: string;
+  showDragHint?: boolean;
+  onGraphDrag?: () => void;
 }
 
 // AK-47 silhouette SVG path
@@ -59,6 +61,8 @@ export default function ColorSection({
   onNavClick,
   sectionIndex,
   stickerName,
+  showDragHint = false,
+  onGraphDrag,
 }: Props) {
   const [selectedSkin, setSelectedSkin] = useState<Skin | null>(null);
   const [highlightId, setHighlightId] = useState<string | null>(null);
@@ -353,6 +357,8 @@ export default function ColorSection({
                 focusIds={likedOnlyActive ? likedIds : null}
                 filterWeapon={filterWeapon}
                 onSelect={handleSkinSelect}
+                showDragHint={showDragHint}
+                onGraphDrag={onGraphDrag}
                 view={view}
               />
 
