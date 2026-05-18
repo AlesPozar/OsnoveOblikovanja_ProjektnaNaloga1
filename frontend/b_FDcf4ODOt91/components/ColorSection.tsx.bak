@@ -269,8 +269,8 @@ export default function ColorSection({
                     <button
                       key={name}
                       className={`block w-full text-left px-3 py-1.5 text-sm font-light hover:bg-gray-50 transition-colors ${highlightId === s?.id
-                        ? "text-gray-900 font-medium"
-                        : "text-gray-500"
+                          ? "text-gray-900 font-medium"
+                          : "text-gray-500"
                         }`}
                       onClick={(e) => {
                         e.stopPropagation();
@@ -419,10 +419,7 @@ export default function ColorSection({
         <a href={LINKEDIN_URL} target="_blank" rel="noreferrer">
           Ale&#353;
         </a>{" "}
-        and{" "}
-        <a href={DOMEN_LINKEDIN_URL} target="_blank" rel="noreferrer">
-          Domen
-        </a>
+        and Domen
       </div>
 
       {/* ── BOTTOM RIGHT: CS2 sticker ── */}

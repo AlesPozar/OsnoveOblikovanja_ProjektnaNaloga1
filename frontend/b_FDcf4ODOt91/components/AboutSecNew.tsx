@@ -5,6 +5,7 @@ import { Skin, getAllWeaponTypes, skinToColor } from "@/lib/skinData";
 import SkinPanel from "./SkinPanel";
 
 const LINKEDIN_URL = "https://www.linkedin.com/in/ale%C5%A1-po%C5%BEar-946854279/";
+const DOMEN_LINKEDIN_URL = "https://www.linkedin.com/in/domen-kamplet-03603629a/";
 
 interface Props {
   title: string;
@@ -136,7 +137,7 @@ export default function ColorSection({
       <header className="relative flex items-center px-10 py-4 mt-5">
         <h2
           className={`rainbow-title-safe absolute left-1/2 transform -translate-x-1/2 text-4xl sm:text-5xl min-w-[30rem] font-light italic text-center tracking-wider ${titleClass}`}
-          style={{fontFamily: "inherit" }}
+          style={{ fontFamily: "inherit" }}
         >
           {title}
         </h2>
@@ -399,7 +400,10 @@ export default function ColorSection({
         <a href={LINKEDIN_URL} target="_blank" rel="noreferrer">
           Ale&#353;
         </a>{" "}
-        and Domen
+        and{" "}
+        <a href={DOMEN_LINKEDIN_URL} target="_blank" rel="noreferrer">
+          Domen
+        </a>
       </div>
 
       <div className="absolute bottom-4 right-6">

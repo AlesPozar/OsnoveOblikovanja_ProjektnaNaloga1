@@ -5,6 +5,7 @@ interface Props {
 }
 
 const LINKEDIN_URL = "https://www.linkedin.com/in/ale%C5%A1-po%C5%BEar-946854279/";
+const DOMEN_LINKEDIN_URL = "https://www.linkedin.com/in/domen-kamplet-03603629a/";
 
 export default function TitleScreen({ onContinue }: Props) {
   return (
@@ -14,7 +15,10 @@ export default function TitleScreen({ onContinue }: Props) {
         <a href={LINKEDIN_URL} target="_blank" rel="noreferrer">
           Ale&#353;
         </a>{" "}
-        and Domen
+        and{" "}
+        <a href={DOMEN_LINKEDIN_URL} target="_blank" rel="noreferrer">
+          Domen
+        </a>
       </div>
 
       <h1

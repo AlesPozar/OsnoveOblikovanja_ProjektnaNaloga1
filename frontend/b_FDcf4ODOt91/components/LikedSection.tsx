@@ -6,6 +6,7 @@ import { GunSmall } from "./GunPlaceholder";
 import SteamMarketLink from "./SteamMarketLink";
 
 const LINKEDIN_URL = "https://www.linkedin.com/in/ale%C5%A1-po%C5%BEar-946854279/";
+const DOMEN_LINKEDIN_URL = "https://www.linkedin.com/in/domen-kamplet-03603629a/";
 
 interface Props {
   likedIds: Set<string>;
@@ -84,9 +85,8 @@ export default function LikedSection({
               return (
                 <div
                   key={skin.id}
-                  className={`group relative rounded border border-gray-100 hover:border-gray-300 p-3 transition-all bg-white hover:shadow-sm flex flex-col ${
-                    isExpanded ? "col-span-2 row-span-2" : ""
-                  }`}
+                  className={`group relative rounded border border-gray-100 hover:border-gray-300 p-3 transition-all bg-white hover:shadow-sm flex flex-col ${isExpanded ? "col-span-2 row-span-2" : ""
+                    }`}
                   onClick={() => setExpandedId(isExpanded ? null : skin.id)}
                 >
                   <button
@@ -116,9 +116,8 @@ export default function LikedSection({
                     />
                   </div>
 
-                  <div className={`${
-                    isExpanded ? "opacity-100 absolute bottom-2 left-2 right-12" : "opacity-0"
-                  }`}>
+                  <div className={`${isExpanded ? "opacity-100 absolute bottom-2 left-2 right-12" : "opacity-0"
+                    }`}>
                     <p className="text-xs font-light text-gray-500 leading-tight truncate w-full">
                       {skin.weapon}
                     </p>
@@ -152,7 +151,10 @@ export default function LikedSection({
         <a href={LINKEDIN_URL} target="_blank" rel="noreferrer">
           Ale&#353;
         </a>{" "}
-        and Domen
+        and{" "}
+        <a href={DOMEN_LINKEDIN_URL} target="_blank" rel="noreferrer">
+          Domen
+        </a>
       </div>
 
       {/* CS2 sticker */}
@@ -187,11 +189,10 @@ export default function LikedSection({
             className="flex items-center justify-center"
           >
             <span
-              className={`block rounded-full border transition-all duration-200 ${
-                currentSection === i
+              className={`block rounded-full border transition-all duration-200 ${currentSection === i
                   ? "w-4 h-4 border-gray-500"
                   : "hover:w-4 hover:h-4 w-2.5 h-2.5 border-gray-300 hover:border-gray-500"
-              }`}
+                }`}
             />
           </button>
         ))}

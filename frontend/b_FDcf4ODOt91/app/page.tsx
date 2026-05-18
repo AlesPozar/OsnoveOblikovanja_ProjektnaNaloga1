@@ -4,7 +4,7 @@ import TitleScreen from "@/components/TitleScreen";
 import ColorSection from "@/components/ColorSection";
 import LikedSection from "@/components/LikedSection";
 import AboutSecNew from "@/components/AboutSecNew";
-import { dominantSkins, averageSkins, weightedSkins } from "@/lib/skinData";
+import { dominantSkins, averageSkins, weightedSkins, dominantMasksSkins, averageMasksSkins, weightedMasksSkins } from "@/lib/skinData";
 
 const TOTAL_SECTIONS = 5;
 const SECTION_ABOUT = 0;
