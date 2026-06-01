@@ -1,106 +1,76 @@
-# POMEMBNO, GLEJ TODO del ZA KAJ JE SE TREBA NRDIT <3, bolj spodaj
-.
+# CS2 Projekt, Osnove Oblikovanja
 
-.
+Avtorja: Aleš Požar in Domen Kamplet
 
-.
+## Struktura projekta
 
-.
+- `python/` vsebuje kodo za analiziranje slik in dosto do "online" dataseta.
 
-.
+- `frontend/` vsebuje kodo spletne strani.
 
-.
+- v `./` so prisotni x_x_x.txt dokumenti, ki vsebujejo podatke o analiziranih skinih, glede na metodo v imenu datoteke.
 
-.
+- `skins/` vsebuje maske posameznih vrst orožja.
 
-.
+- `sprites/` vsebuje nekaj primerov slik iz dataseta.
 
-.
+## Kako začeti na novem računalniku (Windows PowerShell) - Analiza slik | NI POMEMBNO ZA ZAGON ZASLONSKEGA VMESNIKA |
 
-.
-
-# Counter-Strike Skin Dataset Test
-
-## Project structure
-
-- `README.md` and `.gitignore` stay in root.
-- `python/` contains Python code and dependencies.
-- `frontend/` is reserved for future frontend work.
-
-## Setup on another PC (Windows PowerShell)
-
-1. Clone repo:
+1. Kloniraj repozitorij in se premakni v mapo:
 
 ```powershell
 git clone <your-repo-url>
-cd testDataset
+cd OsnoveOblikovanja_ProjektnaNaloga
 ```
 
-2. Create and activate virtual environment:
+2. Nastavi virtualno okolje (venv):
 
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 ```
 
-If script execution is blocked:
+Če je ukaz blokiran:
 
 ```powershell
 Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
 ```
 
-3. Install dependencies:
+3. Naloži odvisnosti:
 
 ```powershell
 python -m pip install --upgrade pip
 python -m pip install -r python/requirements.txt
 ```
 
-4. Run script:
+4. Poženi skripte:
 
 ```powershell
 python python/testSkins.py
 ```
 
-## Notes
+## Kako začeti na novem računalniku (Windows PowerShell) - Zaslonski vmesnik/frontend
 
-- If your prompt starts with `(.venv)`, venv is active.
-- `.venv` should not be committed.
-- The script saves image output in `python/`.
+1. Ko je repozitorij kloniraj se premakni v mapo:
 
+```powershell
+cd frontend/b_FDcf4ODOt91
+```
 
-# POMEMBNO
-skripte za zbirke ki so že izdelane in za katere so že narejeni .txt dokumenti se načeloma NE POGANJA ŠE ENKRAT, ker tako samo porabiš preveč časa. npr. 30min + na en run.
+2. Namesti odvisnosti:
 
-Kot osnovn template skript si lahko pogledas, SingleDominantColor.py v python/.
+```powershell
+npm install
+```
 
-Predn runas generalno, runnej na manjšem previewjem.
+3. Poženi razvojni strežnik:
 
-Narejene .txt zbirke naj uporabljajo sledeči format: name|rarity|weapon|hue|saturation|value
-
-# TODO
-
-- Izdelaj zbirke za
-
-    ena
-
-    -   average_color_whole
-    -   weighted_average_color_whole
-
-    dva
-
-    zbirka robnih pikslov površin za vsak gun/knife type kjer se v in game pogledu dokaj zakrivajo, npr holderji, tm kjer character drži gun, al pa npr "bat/kopito" nekaterih kukr AK-47
-
-    tri, glede na zgornje zbirke se excludajo
-
-    -   single_dominant_color_no_blocked
-    -   average_color_no_blocked
-    -   weighted_average_color_no_blocked
+```powershell
+npm run dev
+```
 
 
-# DONE
--   izdelano
 
-    ena
+## Dodatno
 
-    -   single_dominant_color_whole
+- Če se ukaz začne z `(.venv)`, je venv aktiven.
