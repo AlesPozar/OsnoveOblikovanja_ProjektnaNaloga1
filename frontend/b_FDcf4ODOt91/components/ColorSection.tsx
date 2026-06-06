@@ -182,7 +182,7 @@ export default function ColorSection({
           {/* by weapon dropdown */}
           <div className="relative">
             <div className="flex flex-col items-start">
-              <span className="text-[11px] font-bold text-gray-400 tracking-widest mb-0.5 uppercase">
+              <span className="text-[0.6875rem] font-bold text-gray-400 tracking-widest mb-0.5 uppercase">
                 by weapon:
               </span>
               <button
@@ -231,7 +231,7 @@ export default function ColorSection({
           {/* highlight skin by name dropdown */}
           <div className="relative">
             <div className="flex flex-col items-start">
-              <span className="text-[11px] font-bold text-gray-400 tracking-widest mb-0.5 uppercase">
+              <span className="text-[0.6875rem] font-bold text-gray-400 tracking-widest mb-0.5 uppercase">
                 highlight skin by name:
               </span>
               <button
@@ -332,14 +332,16 @@ export default function ColorSection({
 
         {/* Left column: skin panel (hidden when panelVisible is false) */}
         {panelVisible && (
-          <div className="w-1/2 min-w-0 overflow-y-auto px-10 pt-4 m-40 center">
-            <SkinPanel
-              skin={selectedSkin}
-              allSkins={skins}
-              likedIds={likedIds}
-              onLike={onLike}
-              onSelect={handleSkinSelect}
-            />
+          <div className="flex w-1/2 min-w-0 flex-col overflow-y-auto px-10 py-10">
+            <div className="my-auto w-full">
+              <SkinPanel
+                skin={selectedSkin}
+                allSkins={skins}
+                likedIds={likedIds}
+                onLike={onLike}
+                onSelect={handleSkinSelect}
+              />
+            </div>
           </div>
         )}
 

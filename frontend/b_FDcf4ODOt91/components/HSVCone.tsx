@@ -17,6 +17,7 @@ interface Props {
 
 const W = 520;
 const H = 520;
+const GRAPH_SIZE_REM = W / 16;
 const CX = W / 2;
 const CY = H / 2;
 
@@ -335,7 +336,9 @@ export default function HSVCone({
     if (!ctx) return;
 
     const rawDpr = window.devicePixelRatio || 1;
-    const dpr = Math.min(2, Math.max(1, rawDpr));
+    const rootFontSize = Number.parseFloat(window.getComputedStyle(document.documentElement).fontSize);
+    const resolutionScale = rootFontSize / 16;
+    const dpr = Math.min(3, Math.max(1, rawDpr * (Number.isFinite(resolutionScale) ? resolutionScale : 1)));
     const expectedW = Math.round(W * dpr);
     const expectedH = Math.round(H * dpr);
     if (canvas.width !== expectedW || canvas.height !== expectedH) {
@@ -588,7 +591,7 @@ export default function HSVCone({
     <div className="relative select-none w-full flex justify-center items-center">
       {renderDragHint && (view === "cone" || view === "circle") && (
         <div
-          className={`pointer-events-none hidden lg:block absolute -top-9 left-1/2 z-10 h-[52px] w-[230px] -translate-x-1/2 transition-opacity duration-700 ease-out ${
+          className={`pointer-events-none hidden lg:block absolute -top-9 left-1/2 z-10 h-[3.25rem] w-[14.375rem] -translate-x-1/2 transition-opacity duration-700 ease-out ${
             showDragHint ? "opacity-100" : "opacity-0"
           }`}
         >
@@ -608,7 +611,7 @@ export default function HSVCone({
             <path d="M 72 15 C 70 15, 66 22, 44 22" stroke="#4b5563" strokeWidth="1.5" strokeDasharray="4 4" markerEnd="url(#hsv-drag-arrow-head)" />
             <path d="M 158 15 C 160 15, 164 22, 186 22" stroke="#4b5563" strokeWidth="1.5" strokeDasharray="4 4" markerEnd="url(#hsv-drag-arrow-head)" />
           </svg>
-          <span className="absolute left-1/2 top-0 w-full -translate-x-1/2 text-center text-[18px] font-light text-gray-400">
+          <span className="absolute left-1/2 top-0 w-full -translate-x-1/2 text-center text-[1.125rem] font-light text-gray-400">
             Drag ME!
           </span>
         </div>
@@ -621,6 +624,7 @@ export default function HSVCone({
           height={H}
           viewBox={`0 0 ${W} ${H}`}
           className="cursor-grab active:cursor-grabbing touch-none"
+          style={{ width: `${GRAPH_SIZE_REM}rem`, height: `${GRAPH_SIZE_REM}rem` }}
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={endDrag}
@@ -632,7 +636,7 @@ export default function HSVCone({
         <canvas
           ref={coneCanvasRef}
           className="cursor-grab active:cursor-grabbing touch-none"
-          style={{ width: W, height: H }}
+          style={{ width: `${GRAPH_SIZE_REM}rem`, height: `${GRAPH_SIZE_REM}rem` }}
           onPointerDown={handleConePointerDown}
           onPointerMove={handleConePointerMove}
           onPointerUp={handleConePointerUp}

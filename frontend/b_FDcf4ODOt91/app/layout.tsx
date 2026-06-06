@@ -13,6 +13,16 @@ export const metadata: Metadata = {
   title: 'CS2 Skins Theory — /color',
   description: 'Visualize hidden color links in CS2 skins through dominant, average, and weighted average color analysis using HSV space.',
   generator: 'v0.app',
+  icons: {
+    icon: [
+      {
+        url: '/favicon.png',
+        sizes: '512x512',
+        type: 'image/png',
+      },
+    ],
+    shortcut: '/favicon.png',
+  },
 }
 
 export default function RootLayout({

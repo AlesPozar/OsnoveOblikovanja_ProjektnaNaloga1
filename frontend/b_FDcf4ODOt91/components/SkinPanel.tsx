@@ -27,7 +27,7 @@ export default function SkinPanel({
   const rarityColor = RARITY_COLORS[skin.rarity] || "#aaa";
 
   return (
-    <div className="relative flex flex-col gap-3 w-full h-full">
+    <div className="relative flex w-full flex-col gap-3">
       <SteamMarketLink skin={skin} className="absolute left-0 top-0 z-40" />
       {/* Star like button — top-right of panel */}
       <button
@@ -71,7 +71,7 @@ export default function SkinPanel({
 
       {/* Skin name + weapon */}
       <div className="text-left">
-        <p className="text-[11px] font-light text-gray-400 tracking-wide">
+        <p className="text-[0.6875rem] font-light text-gray-400 tracking-wide">
           {skin.weapon}
         </p>
         <p className="text-sm font-light text-gray-700 leading-tight">
@@ -79,7 +79,7 @@ export default function SkinPanel({
         </p>
         <div className="mt-2">
           <span
-            className="text-[11px] px-2 py-1 rounded text-white font-light"
+            className="text-[0.6875rem] px-2 py-1 rounded text-white font-light"
             style={{ background: rarityColor }}
           >
             {skin.rarity}

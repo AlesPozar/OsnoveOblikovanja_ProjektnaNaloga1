@@ -159,14 +159,16 @@ export default function ColorSection({
         )}
 
         {panelVisible && (
-          <div className="w-1/2 min-w-0 overflow-y-auto px-10 pt-4 m-40 center">
-            <SkinPanel
-              skin={selectedSkin}
-              allSkins={skins}
-              likedIds={likedIds}
-              onLike={onLike}
-              onSelect={handleSkinSelect}
-            />
+          <div className="flex w-1/2 min-w-0 flex-col overflow-y-auto px-10 py-10">
+            <div className="my-auto w-full">
+              <SkinPanel
+                skin={selectedSkin}
+                allSkins={skins}
+                likedIds={likedIds}
+                onLike={onLike}
+                onSelect={handleSkinSelect}
+              />
+            </div>
           </div>
         )}
 
@@ -188,7 +190,7 @@ export default function ColorSection({
 
               <div className="relative">
                 <div className="flex flex-col items-start">
-                  <span className="text-[11px] font-bold text-gray-400 tracking-widest mb-0.5 uppercase">by weapon:</span>
+                  <span className="text-[0.6875rem] font-bold text-gray-400 tracking-widest mb-0.5 uppercase">by weapon:</span>
                   <button
                     className="flex items-center gap-1 text-2xl font-light text-gray-700 hover:text-gray-900 transition-colors"
                     onClick={(e) => {
@@ -232,7 +234,7 @@ export default function ColorSection({
 
               <div className="relative">
                 <div className="flex flex-col items-start">
-                  <span className="text-[11px] font-bold text-gray-400 tracking-widest mb-0.5 uppercase">highlight skin by name:</span>
+                  <span className="text-[0.6875rem] font-bold text-gray-400 tracking-widest mb-0.5 uppercase">highlight skin by name:</span>
                   <button
                     className="flex items-center gap-1 text-2xl font-light text-gray-700 hover:text-gray-900 transition-colors"
                     onClick={(e) => {
@@ -301,7 +303,7 @@ export default function ColorSection({
               </button>
             </div>
 
-            <div className="pointer-events-none hidden lg:block absolute -top-36 left-1/2 -translate-x-1/2 w-[920px] h-[360px]">
+            <div className="pointer-events-none hidden lg:block absolute -top-36 left-1/2 -translate-x-1/2 w-[57.5rem] h-[22.5rem]">
               <svg
                 className="absolute inset-0 h-full w-full"
                 viewBox="0 0 920 360"
@@ -362,7 +364,7 @@ export default function ColorSection({
                     }}
                   />
                 </button>
-                <div className="pointer-events-none hidden lg:block absolute -left-52 -top-12 w-[440px] h-[120px]">
+                <div className="pointer-events-none hidden lg:block absolute -left-52 -top-12 w-[27.5rem] h-[7.5rem]">
                   <svg className="absolute inset-0 h-full w-full" viewBox="0 0 440 120" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                     <defs>
                       <marker id="about-arrow-head-dot" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
@@ -371,7 +373,7 @@ export default function ColorSection({
                     </defs>
                     <path d="M 410 25 C 350 80, 290 40, 245 60" stroke="#4b5563" strokeWidth="1.5" strokeDasharray="4 4" markerEnd="url(#about-arrow-head-dot)" />
                   </svg>
-                  <span className="absolute left-100 top-0 text-[18px] font-light text-gray-400 w-full">Click ME!</span>
+                  <span className="absolute left-100 top-0 text-[1.125rem] font-light text-gray-400 w-full">Click ME!</span>
                 </div>
               </div>
             )}
@@ -379,7 +381,7 @@ export default function ColorSection({
         </div>
       </div>
 
-      <div className="absolute bottom-16 left-1/2 z-10 w-[min(58rem,calc(100%-7rem))] -translate-x-1/2 text-center text-[15px] font-light leading-relaxed text-gray-400 sm:bottom-20">
+      <div className="absolute bottom-16 left-1/2 z-10 w-[min(58rem,calc(100%-7rem))] -translate-x-1/2 text-center text-[0.9375rem] font-light leading-relaxed text-gray-400 sm:bottom-20">
         <p>
           This project helps you explore hidden secrets of CS2/CSGO skins and their colors. Data was
           analysed from{" "}

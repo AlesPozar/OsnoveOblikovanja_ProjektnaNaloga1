@@ -1,5 +1,6 @@
 "use client";
 import { useState, useRef, useCallback, useEffect } from "react";
+import { Maximize2, Monitor } from "lucide-react";
 import TitleScreen from "@/components/TitleScreen";
 import ColorSection from "@/components/ColorSection";
 import LikedSection from "@/components/LikedSection";
@@ -13,6 +14,26 @@ const SECTION_AVERAGE = 2;
 const SECTION_WEIGHTED = 3;
 const SECTION_LIKED = 4;
 const LIKED_IDS_STORAGE_KEY = "cs2-skins-liked-ids";
+type ViewportBlockReason = "mobile" | "narrow" | null;
+
+function ViewportNotice({ reason }: { reason: Exclude<ViewportBlockReason, null> }) {
+  const Icon = reason === "mobile" ? Monitor : Maximize2;
+  const message =
+    reason === "mobile"
+      ? "please open this website on a computer"
+      : "please resize to full screen";
+
+  return (
+    <main className="min-h-screen w-full bg-white flex items-center justify-center px-8 text-center">
+      <div className="flex flex-col items-center gap-5">
+        <Icon size="4.75rem" strokeWidth={1.15} className="text-gray-400" aria-hidden="true" />
+        <p className="max-w-xs text-[1.125rem] font-light leading-relaxed tracking-wide text-gray-400">
+          {message}
+        </p>
+      </div>
+    </main>
+  );
+}
 
 export default function Home() {
   const [showMain, setShowMain] = useState(false);
@@ -21,8 +42,10 @@ export default function Home() {
   const [likedIdsReady, setLikedIdsReady] = useState(false);
   const [analysisMode, setAnalysisMode] = useState<"whole" | "ingame">("whole");
   const [hasDraggedColorGraph, setHasDraggedColorGraph] = useState(false);
+  const [viewportBlockReason, setViewportBlockReason] = useState<ViewportBlockReason>(null);
 
   const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const largestDesktopWidthRef = useRef(0);
 
   const scrollToSection = useCallback((index: number) => {
     const el = sectionRefs.current[index];
@@ -71,6 +94,44 @@ export default function Home() {
     setHasDraggedColorGraph(true);
   }, []);
 
+  useEffect(() => {
+    const updateViewportBlock = () => {
+      const width = window.innerWidth;
+      const visualWidth = window.visualViewport?.width || width;
+      const outerWidth = window.outerWidth || width;
+      const screenWidth = window.screen?.availWidth || window.screen?.width || null;
+      const measuredDesktopWidth = Math.max(screenWidth ?? 0, outerWidth, width);
+      const userAgent = window.navigator?.userAgent ?? "";
+      const hasMobileUserAgent = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+      const looksLikeDesktopWidth = measuredDesktopWidth >= 1200 || largestDesktopWidthRef.current >= 1200;
+      const isMobile = hasMobileUserAgent && !looksLikeDesktopWidth;
+
+      if (isMobile) {
+        setViewportBlockReason("mobile");
+        return;
+      }
+
+      largestDesktopWidthRef.current = Math.max(largestDesktopWidthRef.current, measuredDesktopWidth);
+
+      const desktopWidth = largestDesktopWidthRef.current || measuredDesktopWidth;
+      const narrowLimit = desktopWidth * 0.56;
+      const isHalfScreenOrLess = Math.min(width, visualWidth, outerWidth) <= narrowLimit;
+
+      setViewportBlockReason(isHalfScreenOrLess ? "narrow" : null);
+    };
+
+    updateViewportBlock();
+    window.addEventListener("resize", updateViewportBlock);
+    window.addEventListener("orientationchange", updateViewportBlock);
+    window.visualViewport?.addEventListener("resize", updateViewportBlock);
+
+    return () => {
+      window.removeEventListener("resize", updateViewportBlock);
+      window.removeEventListener("orientationchange", updateViewportBlock);
+      window.visualViewport?.removeEventListener("resize", updateViewportBlock);
+    };
+  }, []);
+
   // Intersection observer — update active section dot
   useEffect(() => {
     if (!showMain) return;
@@ -96,6 +157,10 @@ export default function Home() {
 
     return () => observers.forEach((o) => o.disconnect());
   }, [showMain]);
+
+  if (viewportBlockReason) {
+    return <ViewportNotice reason={viewportBlockReason} />;
+  }
 
   if (!showMain) {
     return <TitleScreen onContinue={() => setShowMain(true)} />;
