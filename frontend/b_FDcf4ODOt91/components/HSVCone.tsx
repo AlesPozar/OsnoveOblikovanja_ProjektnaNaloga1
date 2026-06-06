@@ -17,7 +17,7 @@ interface Props {
 
 const W = 520;
 const H = 520;
-const GRAPH_SIZE_REM = W / 16;
+const GRAPH_SIZE_REM = 36;
 const CX = W / 2;
 const CY = H / 2;
 

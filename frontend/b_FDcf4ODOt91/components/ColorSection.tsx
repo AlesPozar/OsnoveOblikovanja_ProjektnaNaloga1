@@ -333,7 +333,7 @@ export default function ColorSection({
         {/* Left column: skin panel (hidden when panelVisible is false) */}
         {panelVisible && (
           <div className="flex w-1/2 min-w-0 flex-col overflow-y-auto px-10 py-10">
-            <div className="my-auto w-full">
+            <div className="my-auto mx-auto w-full max-w-[36rem] translate-x-16">
               <SkinPanel
                 skin={selectedSkin}
                 allSkins={skins}
@@ -349,7 +349,7 @@ export default function ColorSection({
         <div
           className={`${panelVisible ? "w-1/2" : "flex-1"} min-w-0 flex flex-col items-center justify-center relative`}
         >
-          <>
+          <div className={`${panelVisible ? "-translate-x-16" : ""} flex flex-col items-center`}>
             <HSVCone
               skins={coneSkins}
               selectedId={selectedSkin?.id ?? null}
@@ -409,7 +409,7 @@ export default function ColorSection({
                 </svg>
               </button>
             </div>
-          </>
+          </div>
         </div>
 
         {/* Right: nav is absolutely positioned; no spacer */}
